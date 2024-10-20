@@ -484,7 +484,7 @@ func DeletePackageHandler(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 
-	log.Println("FIREBASE_CREDENTIALS:", os.Getenv("FIREBASE_CREDENTIALS"))
+	// log.Println("FIREBASE_CREDENTIALS:", os.Getenv("FIREBASE_CREDENTIALS"))
 
 	// Check if running in production or not
 	if os.Getenv("RAILWAY_ENV") != "production" {
