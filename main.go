@@ -14,6 +14,7 @@ import (
 	firebase "firebase.google.com/go"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
+	"github.com/joho/godotenv"
 	httpSwagger "github.com/swaggo/http-swagger"
 	"google.golang.org/api/option"
 )
@@ -482,11 +483,16 @@ func DeletePackageHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	// // Load the .env file
-	// err := godotenv.Load()
-	// if err != nil {
-	// 	log.Fatalf("Error loading .env file: %v", err)
-	// }
+
+	log.Println("FIREBASE_CREDENTIALS:", os.Getenv("FIREBASE_CREDENTIALS"))
+
+	// Check if running in production or not
+	if os.Getenv("RAILWAY_ENV") != "production" {
+		err := godotenv.Load()
+		if err != nil {
+			log.Fatalf("Error loading .env file: %v", err)
+		}
+	}
 
 	r := mux.NewRouter()
 	// Define CRUD routes projects
