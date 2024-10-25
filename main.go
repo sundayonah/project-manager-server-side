@@ -13,7 +13,6 @@ import (
 
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
-	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 	httpSwagger "github.com/swaggo/http-swagger"
 )
@@ -254,9 +253,9 @@ func DeleteProjectHandler(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	// Load .env file
-	if err := godotenv.Load(); err != nil {
-		log.Printf("Warning: .env file not found: %v", err)
-	}
+	// if err := godotenv.Load(); err != nil {
+	// 	log.Printf("Warning: .env file not found: %v", err)
+	// }
 
 	// Initialize database connection
 	var err error
@@ -280,7 +279,7 @@ func main() {
 
 	// CORS setup
 	corsOptions := handlers.CORS(
-		handlers.AllowedOrigins([]string{"http://localhost:3000", "https://your-domain.com"}),
+		handlers.AllowedOrigins([]string{"http://localhost:3000", "https://project-manager-server-side-production.up.railway.app/"}),
 		handlers.AllowedMethods([]string{"GET", "POST", "PUT", "DELETE"}),
 		handlers.AllowedHeaders([]string{"Content-Type"}),
 	)
