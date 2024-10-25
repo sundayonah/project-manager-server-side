@@ -1,0 +1,266 @@
+basePath: /api
+definitions:
+  main.Packages:
+    properties:
+      description:
+        type: string
+      id:
+        type: string
+      link:
+        type: string
+      name:
+        type: string
+    type: object
+  main.Project:
+    properties:
+      description:
+        type: string
+      id:
+        type: string
+      imageUrl:
+        type: string
+      link:
+        type: string
+      name:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: API for managing packages
+  title: Packages Manager API
+  version: "1.0"
+paths:
+  /api/packages/new:
+    post:
+      consumes:
+      - application/json
+      description: Create a new package with the provided data
+      parameters:
+      - description: Packages data
+        in: body
+        name: package
+        required: true
+        schema:
+          $ref: '#/definitions/main.Packages'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/main.Packages'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Create a new package
+      tags:
+      - packages
+  /api/projects/new:
+    post:
+      consumes:
+      - application/json
+      description: Create a new project with the provided data
+      parameters:
+      - description: Project data
+        in: body
+        name: project
+        required: true
+        schema:
+          $ref: '#/definitions/main.Project'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/main.Project'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Create a new project
+      tags:
+      - projects
+  /packages:
+    get:
+      description: Retrieve a list of all packages
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/main.Packages'
+            type: array
+      summary: Get all packages
+  /packages/{id}:
+    delete:
+      description: Delete a package by its ID
+      parameters:
+      - description: Packages ID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Delete a package by ID
+    get:
+      description: Retrieve a package by its ID
+      parameters:
+      - description: Packages ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.Packages'
+      summary: Get a package by ID
+    put:
+      consumes:
+      - multipart/form-data
+      description: Update an existing package by its ID
+      parameters:
+      - description: Packages ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Packages name
+        in: formData
+        name: name
+        type: string
+      - description: Image URL
+        in: formData
+        name: imageUrl
+        type: string
+      - description: Packages link
+        in: formData
+        name: link
+        type: string
+      - description: Packages description
+        in: formData
+        name: description
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Update a package by ID
+  /projects:
+    get:
+      description: Retrieve a list of all projects
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/main.Project'
+            type: array
+      summary: Get all projects
+  /projects/{id}:
+    delete:
+      description: Delete a project by its ID
+      parameters:
+      - description: Project ID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Delete a project by ID
+    get:
+      description: Retrieve a project by its ID
+      parameters:
+      - description: Project ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.Project'
+      summary: Get a project by ID
+    put:
+      consumes:
+      - multipart/form-data
+      description: Update an existing project by its ID
+      parameters:
+      - description: Project ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Project name
+        in: formData
+        name: name
+        type: string
+      - description: Image URL
+        in: formData
+        name: imageUrl
+        type: string
+      - description: Project link
+        in: formData
+        name: link
+        type: string
+      - description: Project description
+        in: formData
+        name: description
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Update a project by ID
+swagger: "2.0"
