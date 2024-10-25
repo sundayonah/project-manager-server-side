@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"project-manager/ent/packages"
+	"time"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -53,6 +54,34 @@ func (pc *PackagesCreate) SetNillableDescription(s *string) *PackagesCreate {
 	return pc
 }
 
+// SetCreatedAt sets the "created_at" field.
+func (pc *PackagesCreate) SetCreatedAt(t time.Time) *PackagesCreate {
+	pc.mutation.SetCreatedAt(t)
+	return pc
+}
+
+// SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
+func (pc *PackagesCreate) SetNillableCreatedAt(t *time.Time) *PackagesCreate {
+	if t != nil {
+		pc.SetCreatedAt(*t)
+	}
+	return pc
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (pc *PackagesCreate) SetUpdatedAt(t time.Time) *PackagesCreate {
+	pc.mutation.SetUpdatedAt(t)
+	return pc
+}
+
+// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
+func (pc *PackagesCreate) SetNillableUpdatedAt(t *time.Time) *PackagesCreate {
+	if t != nil {
+		pc.SetUpdatedAt(*t)
+	}
+	return pc
+}
+
 // Mutation returns the PackagesMutation object of the builder.
 func (pc *PackagesCreate) Mutation() *PackagesMutation {
 	return pc.mutation
@@ -60,6 +89,7 @@ func (pc *PackagesCreate) Mutation() *PackagesMutation {
 
 // Save creates the Packages in the database.
 func (pc *PackagesCreate) Save(ctx context.Context) (*Packages, error) {
+	pc.defaults()
 	return withHooks(ctx, pc.sqlSave, pc.mutation, pc.hooks)
 }
 
@@ -85,6 +115,18 @@ func (pc *PackagesCreate) ExecX(ctx context.Context) {
 	}
 }
 
+// defaults sets the default values of the builder before save.
+func (pc *PackagesCreate) defaults() {
+	if _, ok := pc.mutation.CreatedAt(); !ok {
+		v := packages.DefaultCreatedAt()
+		pc.mutation.SetCreatedAt(v)
+	}
+	if _, ok := pc.mutation.UpdatedAt(); !ok {
+		v := packages.DefaultUpdatedAt()
+		pc.mutation.SetUpdatedAt(v)
+	}
+}
+
 // check runs all checks and user-defined validators on the builder.
 func (pc *PackagesCreate) check() error {
 	if _, ok := pc.mutation.Name(); !ok {
@@ -94,6 +136,17 @@ func (pc *PackagesCreate) check() error {
 		if err := packages.NameValidator(v); err != nil {
 			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "Packages.name": %w`, err)}
 		}
+	}
+	if v, ok := pc.mutation.Description(); ok {
+		if err := packages.DescriptionValidator(v); err != nil {
+			return &ValidationError{Name: "description", err: fmt.Errorf(`ent: validator failed for field "Packages.description": %w`, err)}
+		}
+	}
+	if _, ok := pc.mutation.CreatedAt(); !ok {
+		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "Packages.created_at"`)}
+	}
+	if _, ok := pc.mutation.UpdatedAt(); !ok {
+		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "Packages.updated_at"`)}
 	}
 	return nil
 }
@@ -133,6 +186,14 @@ func (pc *PackagesCreate) createSpec() (*Packages, *sqlgraph.CreateSpec) {
 		_spec.SetField(packages.FieldDescription, field.TypeString, value)
 		_node.Description = value
 	}
+	if value, ok := pc.mutation.CreatedAt(); ok {
+		_spec.SetField(packages.FieldCreatedAt, field.TypeTime, value)
+		_node.CreatedAt = value
+	}
+	if value, ok := pc.mutation.UpdatedAt(); ok {
+		_spec.SetField(packages.FieldUpdatedAt, field.TypeTime, value)
+		_node.UpdatedAt = value
+	}
 	return _node, _spec
 }
 
@@ -154,6 +215,7 @@ func (pcb *PackagesCreateBulk) Save(ctx context.Context) ([]*Packages, error) {
 	for i := range pcb.builders {
 		func(i int, root context.Context) {
 			builder := pcb.builders[i]
+			builder.defaults()
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 				mutation, ok := m.(*PackagesMutation)
 				if !ok {

@@ -1,6 +1,8 @@
 package schema
 
 import (
+	"time"
+
 	"entgo.io/ent"
 	"entgo.io/ent/schema/field"
 )
@@ -14,10 +16,23 @@ type Packages struct {
 func (Packages) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("name").
-			NotEmpty(),
+			NotEmpty().
+			Unique().
+			MaxLen(100).
+			Comment("The name of the package"),
 		field.String("link").
-			Optional(),
+			Optional().
+			Comment("The link to the package"),
 		field.String("description").
-			Optional(),
+			Optional().
+			MaxLen(255).
+			Comment("A brief description of the package"),
+		field.Time("created_at").
+			Default(time.Now).
+			Comment("The time the package was created"),
+		field.Time("updated_at").
+			Default(time.Now).
+			UpdateDefault(time.Now).
+			Comment("The time the package was last updated"),
 	}
 }

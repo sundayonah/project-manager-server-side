@@ -15,111 +15,7 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/api/packages/new": {
-            "post": {
-                "description": "Create a new package with the provided data",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "packages"
-                ],
-                "summary": "Create a new package",
-                "parameters": [
-                    {
-                        "description": "Packages data",
-                        "name": "package",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/main.Packages"
-                        }
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "Created",
-                        "schema": {
-                            "$ref": "#/definitions/main.Packages"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/api/projects/new": {
-            "post": {
-                "description": "Create a new project with the provided data",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "projects"
-                ],
-                "summary": "Create a new project",
-                "parameters": [
-                    {
-                        "description": "Project data",
-                        "name": "project",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/main.Project"
-                        }
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "Created",
-                        "schema": {
-                            "$ref": "#/definitions/main.Project"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/packages": {
+        "/api/packages": {
             "get": {
                 "description": "Retrieve a list of all packages",
                 "produces": [
@@ -132,118 +28,14 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/main.Packages"
+                                "$ref": "#/definitions/ent.Packages"
                             }
                         }
                     }
                 }
             }
         },
-        "/packages/{id}": {
-            "get": {
-                "description": "Retrieve a package by its ID",
-                "produces": [
-                    "application/json"
-                ],
-                "summary": "Get a package by ID",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Packages ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/main.Packages"
-                        }
-                    }
-                }
-            },
-            "put": {
-                "description": "Update an existing package by its ID",
-                "consumes": [
-                    "multipart/form-data"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "summary": "Update a package by ID",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Packages ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Packages name",
-                        "name": "name",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "string",
-                        "description": "Image URL",
-                        "name": "imageUrl",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "string",
-                        "description": "Packages link",
-                        "name": "link",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "string",
-                        "description": "Packages description",
-                        "name": "description",
-                        "in": "formData"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "description": "Delete a package by its ID",
-                "summary": "Delete a package by ID",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Packages ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/projects": {
+        "/api/projects": {
             "get": {
                 "description": "Retrieve a list of all projects",
                 "produces": [
@@ -256,24 +48,32 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/main.Project"
+                                "$ref": "#/definitions/ent.Projects"
                             }
                         }
                     }
                 }
             }
         },
-        "/projects/{id}": {
+        "/packages/{id}": {
             "get": {
-                "description": "Retrieve a project by its ID",
+                "description": "Retrieve a package by its ID\nRetrieve a package by its ID",
                 "produces": [
+                    "application/json",
                     "application/json"
                 ],
-                "summary": "Get a project by ID",
+                "summary": "Get a package by ID",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "Project ID",
+                        "type": "integer",
+                        "description": "Projects ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Packages ID",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -283,51 +83,48 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/main.Project"
+                            "$ref": "#/definitions/ent.Packages"
                         }
                     }
                 }
             },
             "put": {
-                "description": "Update an existing project by its ID",
+                "description": "Update a package by ID",
                 "consumes": [
-                    "multipart/form-data"
+                    "application/json"
                 ],
                 "produces": [
                     "application/json"
                 ],
-                "summary": "Update a project by ID",
+                "summary": "Update a package",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "Project ID",
+                        "type": "integer",
+                        "description": "Packages ID",
                         "name": "id",
                         "in": "path",
                         "required": true
-                    },
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/ent.Packages"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete a package by ID",
+                "summary": "Delete a package",
+                "parameters": [
                     {
-                        "type": "string",
-                        "description": "Project name",
-                        "name": "name",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "string",
-                        "description": "Image URL",
-                        "name": "imageUrl",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "string",
-                        "description": "Project link",
-                        "name": "link",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "string",
-                        "description": "Project description",
-                        "name": "description",
-                        "in": "formData"
+                        "type": "integer",
+                        "description": "packages ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -341,14 +138,75 @@ const docTemplate = `{
                         }
                     }
                 }
-            },
-            "delete": {
-                "description": "Delete a project by its ID",
-                "summary": "Delete a project by ID",
+            }
+        },
+        "/projects/{id}": {
+            "get": {
+                "description": "Retrieve a project by its ID\nRetrieve a project by its ID",
+                "produces": [
+                    "application/json",
+                    "application/json"
+                ],
+                "summary": "Get a project by ID",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "Project ID",
+                        "type": "integer",
+                        "description": "Projects ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Projects ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/ent.Projects"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Update a project by ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Update a project",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Projects ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/ent.Projects"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete a project by ID",
+                "summary": "Delete a project",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Projects ID",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -369,39 +227,56 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "main.Packages": {
+        "ent.Packages": {
             "type": "object",
             "properties": {
+                "created_at": {
+                    "description": "The time the package was created",
+                    "type": "string"
+                },
                 "description": {
+                    "description": "A brief description of the package",
                     "type": "string"
                 },
                 "id": {
-                    "type": "string"
+                    "description": "ID of the ent.",
+                    "type": "integer"
                 },
                 "link": {
+                    "description": "The link to the package",
                     "type": "string"
                 },
                 "name": {
+                    "description": "The name of the package",
+                    "type": "string"
+                },
+                "updated_at": {
+                    "description": "The time the package was last updated",
                     "type": "string"
                 }
             }
         },
-        "main.Project": {
+        "ent.Projects": {
             "type": "object",
             "properties": {
                 "description": {
+                    "description": "Description holds the value of the \"description\" field.",
                     "type": "string"
                 },
                 "id": {
-                    "type": "string"
+                    "description": "ID of the ent.",
+                    "type": "integer"
                 },
-                "imageUrl": {
+                "image_url": {
+                    "description": "ImageURL holds the value of the \"image_url\" field.",
                     "type": "string"
                 },
                 "link": {
+                    "description": "Link holds the value of the \"link\" field.",
                     "type": "string"
                 },
                 "name": {
+                    "description": "Name holds the value of the \"name\" field.",
                     "type": "string"
                 }
             }
@@ -411,12 +286,12 @@ const docTemplate = `{
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
-	Version:          "1.0",
-	Host:             "localhost:8080",
-	BasePath:         "/api",
+	Version:          "",
+	Host:             "",
+	BasePath:         "",
 	Schemes:          []string{},
-	Title:            "Packages Manager API",
-	Description:      "API for managing packages",
+	Title:            "",
+	Description:      "",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",

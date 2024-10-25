@@ -8,10 +8,8 @@ require (
 	entgo.io/ent v0.14.1
 	github.com/gorilla/handlers v1.5.2
 	github.com/gorilla/mux v1.8.1
-	github.com/joho/godotenv v1.5.1
 	github.com/lib/pq v1.10.9
 	github.com/swaggo/http-swagger v1.3.4
-	github.com/swaggo/swag v1.16.3
 )
 
 require (
@@ -32,6 +30,7 @@ require (
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/mitchellh/go-wordwrap v0.0.0-20150314170334-ad45545899c7 // indirect
 	github.com/swaggo/files v1.0.1 // indirect
+	github.com/swaggo/swag v1.16.3 // indirect
 	github.com/zclconf/go-cty v1.8.0 // indirect
 	golang.org/x/mod v0.21.0 // indirect
 	golang.org/x/net v0.30.0 // indirect

@@ -11,9 +11,11 @@ var (
 	// PackagesColumns holds the columns for the "packages" table.
 	PackagesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
-		{Name: "name", Type: field.TypeString},
+		{Name: "name", Type: field.TypeString, Unique: true, Size: 100},
 		{Name: "link", Type: field.TypeString, Nullable: true},
-		{Name: "description", Type: field.TypeString, Nullable: true},
+		{Name: "description", Type: field.TypeString, Nullable: true, Size: 255},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
 	}
 	// PackagesTable holds the schema information for the "packages" table.
 	PackagesTable = &schema.Table{

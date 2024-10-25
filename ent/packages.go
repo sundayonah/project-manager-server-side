@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"project-manager/ent/packages"
 	"strings"
+	"time"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
@@ -16,12 +17,16 @@ type Packages struct {
 	config `json:"-"`
 	// ID of the ent.
 	ID int `json:"id,omitempty"`
-	// Name holds the value of the "name" field.
+	// The name of the package
 	Name string `json:"name,omitempty"`
-	// Link holds the value of the "link" field.
+	// The link to the package
 	Link string `json:"link,omitempty"`
-	// Description holds the value of the "description" field.
-	Description  string `json:"description,omitempty"`
+	// A brief description of the package
+	Description string `json:"description,omitempty"`
+	// The time the package was created
+	CreatedAt time.Time `json:"created_at,omitempty"`
+	// The time the package was last updated
+	UpdatedAt    time.Time `json:"updated_at,omitempty"`
 	selectValues sql.SelectValues
 }
 
@@ -34,6 +39,8 @@ func (*Packages) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullInt64)
 		case packages.FieldName, packages.FieldLink, packages.FieldDescription:
 			values[i] = new(sql.NullString)
+		case packages.FieldCreatedAt, packages.FieldUpdatedAt:
+			values[i] = new(sql.NullTime)
 		default:
 			values[i] = new(sql.UnknownType)
 		}
@@ -72,6 +79,18 @@ func (pa *Packages) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field description", values[i])
 			} else if value.Valid {
 				pa.Description = value.String
+			}
+		case packages.FieldCreatedAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field created_at", values[i])
+			} else if value.Valid {
+				pa.CreatedAt = value.Time
+			}
+		case packages.FieldUpdatedAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field updated_at", values[i])
+			} else if value.Valid {
+				pa.UpdatedAt = value.Time
 			}
 		default:
 			pa.selectValues.Set(columns[i], values[i])
@@ -117,6 +136,12 @@ func (pa *Packages) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("description=")
 	builder.WriteString(pa.Description)
+	builder.WriteString(", ")
+	builder.WriteString("created_at=")
+	builder.WriteString(pa.CreatedAt.Format(time.ANSIC))
+	builder.WriteString(", ")
+	builder.WriteString("updated_at=")
+	builder.WriteString(pa.UpdatedAt.Format(time.ANSIC))
 	builder.WriteByte(')')
 	return builder.String()
 }

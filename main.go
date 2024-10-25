@@ -7,8 +7,8 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strconv"
 
-	_ "project-manager/docs"
 	"project-manager/ent"
 
 	"github.com/gorilla/handlers"
@@ -47,11 +47,12 @@ func InitDB() (*ent.Client, error) {
 // @Tags projects
 // @Accept json
 // @Produce json
-// @Param project body Projects true "Projects data"
+// @Param project body ent.Projects true "Projects data" // Updated reference
 // @Success 201 {object} ent.Projects
 // @Failure 400 {object} map[string]string
 // @Failure 500 {object} map[string]string
 // @Router /api/projects/new [post]
+
 func CreateProjectHandler(w http.ResponseWriter, r *http.Request) {
 	var projectData struct {
 		Name        string `json:"name"`
@@ -107,7 +108,7 @@ func CreateProjectHandler(w http.ResponseWriter, r *http.Request) {
 // @Description Retrieve a list of all projects
 // @Produce json
 // @Success 200 {array} ent.Projects
-// @Router /projects [get]
+// @Router /api/projects [get]
 func GetProjectsHandler(w http.ResponseWriter, r *http.Request) {
 	projects, err := client.Projects.Query().All(context.Background())
 	if err != nil {
@@ -125,7 +126,6 @@ func GetProjectsHandler(w http.ResponseWriter, r *http.Request) {
 // @Produce json
 // @Param id path int true "Projects ID"
 // @Success 200 {object} ent.Projects
-// @Router /projects/{id} [get]// GetProjectByIDHandler godoc
 // @Summary Get a project by ID
 // @Description Retrieve a project by its ID
 // @Produce json
@@ -134,23 +134,20 @@ func GetProjectsHandler(w http.ResponseWriter, r *http.Request) {
 // @Router /projects/{id} [get]
 func GetProjectByIDHandler(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
-	idStr := params["id"]
-
-	// Convert string to int64
-	var id int64
-	var err error
-	fmt.Sscan(idStr, &id, &err)
+	id, err := strconv.Atoi(params["id"])
 	if err != nil {
 		http.Error(w, "Invalid project ID", http.StatusBadRequest)
 		return
 	}
 
-	// Convert int64 to int
-	projectId := int(id)
-
-	project, err := client.Projects.Get(context.Background(), projectId)
+	project, err := client.Projects.Get(context.Background(), id)
 	if err != nil {
-		http.Error(w, "Projects not found", http.StatusNotFound)
+		if ent.IsNotFound(err) {
+			http.Error(w, "Project not found", http.StatusNotFound)
+		} else {
+			log.Println("Error retrieving project:", err)
+			http.Error(w, "Internal server error", http.StatusInternalServerError)
+		}
 		return
 	}
 
@@ -251,45 +248,228 @@ func DeleteProjectHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(map[string]string{"message": "Project deleted successfully"})
 }
 
-func main() {
-	// Load .env file
-	// if err := godotenv.Load(); err != nil {
-	// 	log.Printf("Warning: .env file not found: %v", err)
-	// }
+// CreatePackagesHandler godoc
+// @Summary Create a new package
+// @Description Create a new package with the provided data
+// @Tags packages
+// @Accept json
+// @Produce json
+// @Param package body ent.Packages true "Packages data" // Updated reference
+// @Success 201 {object} ent.Packages
+// @Failure 400 {object} map[string]string
+// @Failure 500 {object} map[string]string
+// @Router /api/packages/new [post]
 
-	// Initialize database connection
+func CreatePackageHandler(w http.ResponseWriter, r *http.Request) {
+	var packageData struct {
+		Name        string `json:"name"`
+		Link        string `json:"link,omitempty"`        // Optional field
+		Description string `json:"description,omitempty"` // Optional field
+	}
+
+	if err := json.NewDecoder(r.Body).Decode(&packageData); err != nil {
+		http.Error(w, "Invalid JSON format: "+err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	if packageData.Name == "" {
+		http.Error(w, "Package name is required", http.StatusBadRequest)
+		return
+	}
+
+	// Create the packages in the database
+	packageRecord, err := client.Packages.Create().
+		SetName(packageData.Name).
+		SetLink(packageData.Link).
+		SetDescription(packageData.Description).
+		Save(context.Background())
+	if err != nil {
+		http.Error(w, "Error saving packages: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode(packageRecord)
+}
+
+// GetProjectsHandler godoc
+// @Summary Get all packages
+// @Description Retrieve a list of all packages
+// @Produce json
+// @Success 200 {array} ent.Packages
+// @Router /api/packages [get]
+func GetPackagesHandler(w http.ResponseWriter, r *http.Request) {
+
+	packages, err := client.Packages.Query().All(context.Background())
+	if err != nil {
+		http.Error(w, "Error retrieving packages: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(packages)
+}
+
+// GetPackageByIDHandler godoc
+// @Summary Get a package by ID
+// @Description Retrieve a package by its ID
+// @Produce json
+// @Param id path int true "Projects ID"
+// @Success 200 {object} ent.Projects
+// @Summary Get a package by ID
+// @Description Retrieve a package by its ID
+// @Produce json
+// @Param id path int true "Packages ID"
+// @Success 200 {object} ent.Packages
+// @Router /packages/{id} [get]
+func GetPackageByIDHandler(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	packageIDStr := params["id"]
+
+	// Convert packageID from string to int
+	var packageID int
+	_, err := fmt.Sscan(packageIDStr, &packageID)
+	if err != nil {
+		http.Error(w, "Invalid packages ID", http.StatusBadRequest)
+		return
+	}
+
+	packageRecord, err := client.Packages.Get(context.Background(), packageID)
+	if err != nil {
+		if ent.IsNotFound(err) {
+			http.Error(w, "Package not found", http.StatusNotFound)
+		} else {
+			http.Error(w, "Error retrieving packages: "+err.Error(), http.StatusInternalServerError)
+		}
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(packageRecord)
+}
+
+// UpdatePackageHandler godoc
+// @Summary Update a package
+// @Description Update a package by ID
+// @Accept json
+// @Produce json
+// @Param id path int true "Packages ID"
+// @Success 200 {object} ent.Packages
+// @Router /packages/{id} [put]
+func UpdatePackageHandler(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	packageIDStr := params["id"]
+
+	// Convert packageID from string to int
+	var packageID int
+	_, err := fmt.Sscan(packageIDStr, &packageID)
+	if err != nil {
+		http.Error(w, "Invalid packages ID", http.StatusBadRequest)
+		return
+	}
+
+	var packageData struct {
+		Name        string `json:"name"`
+		Link        string `json:"link,omitempty"`
+		Description string `json:"description,omitempty"`
+	}
+
+	if err := json.NewDecoder(r.Body).Decode(&packageData); err != nil {
+		http.Error(w, "Invalid JSON format: "+err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	if packageData.Name == "" {
+		http.Error(w, "Package name is required", http.StatusBadRequest)
+		return
+	}
+
+	// Update the packages
+	packageRecord, err := client.Packages.UpdateOneID(packageID).
+		SetName(packageData.Name).
+		SetLink(packageData.Link).
+		SetDescription(packageData.Description).
+		Save(context.Background())
+	if err != nil {
+		if ent.IsNotFound(err) {
+			http.Error(w, "Package not found", http.StatusNotFound)
+		} else {
+			http.Error(w, "Error updating packages: "+err.Error(), http.StatusInternalServerError)
+		}
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(packageRecord)
+}
+
+// DeleteProjectHandler godoc
+// @Summary Delete a package
+// @Description Delete a package by ID
+// @Param id path int true "packages ID"
+// @Success 200 {object} map[string]string
+// @Router /packages/{id} [delete]
+func DeletePackageHandler(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	packageIDStr := params["id"]
+
+	// Convert packageID from string to int
+	var packageID int
+	_, err := fmt.Sscan(packageIDStr, &packageID)
+	if err != nil {
+		http.Error(w, "Invalid package ID", http.StatusBadRequest)
+		return
+	}
+
+	err = client.Packages.DeleteOneID(packageID).Exec(context.Background())
+	if err != nil {
+		http.Error(w, "Error deleting package: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(map[string]string{"message": "Package deleted successfully"})
+}
+
+func main() {
+	// Initialize the database
 	var err error
 	client, err = InitDB()
 	if err != nil {
-		log.Fatalf("Failed to initialize database: %v", err)
+		log.Fatalf("Failed to connect to the database: %v", err)
 	}
 	defer client.Close()
 
+	// Create a new router
 	r := mux.NewRouter()
 
-	// Define routes
+	// Define your routes
+	r.HandleFunc("/api/projects/new", CreateProjectHandler).Methods("POST")
 	r.HandleFunc("/api/projects", GetProjectsHandler).Methods("GET")
 	r.HandleFunc("/api/projects/{id}", GetProjectByIDHandler).Methods("GET")
-	r.HandleFunc("/api/projects/new", CreateProjectHandler).Methods("POST")
 	r.HandleFunc("/api/projects/{id}", UpdateProjectHandler).Methods("PUT")
 	r.HandleFunc("/api/projects/{id}", DeleteProjectHandler).Methods("DELETE")
 
-	// Swagger setup
+	r.HandleFunc("/api/packages/new", CreatePackageHandler).Methods("POST")
+	r.HandleFunc("/api/packages", GetPackagesHandler).Methods("GET")
+	r.HandleFunc("/api/packages/{id}", GetPackageByIDHandler).Methods("GET")
+	r.HandleFunc("/api/packages/{id}", UpdatePackageHandler).Methods("PUT")
+	r.HandleFunc("/api/packages/{id}", DeletePackageHandler).Methods("DELETE")
+
+	// Swagger documentation route
 	r.PathPrefix("/swagger/").Handler(httpSwagger.WrapHandler)
 
-	// CORS setup
-	corsOptions := handlers.CORS(
-		handlers.AllowedOrigins([]string{"http://localhost:3000", "https://project-manager-server-side-production.up.railway.app/"}),
+	// CORS middleware
+	corsHandler := handlers.CORS(
+		handlers.AllowedOrigins([]string{"*"}), // Allow all origins for demo purposes
 		handlers.AllowedMethods([]string{"GET", "POST", "PUT", "DELETE"}),
-		handlers.AllowedHeaders([]string{"Content-Type"}),
-	)
+	)(r)
 
-	// Start server
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "8080"
+	// Start the server
+	log.Println("Starting server on :8080...")
+	if err := http.ListenAndServe(":8080", corsHandler); err != nil {
+		log.Fatalf("Could not start server: %v", err)
 	}
-
-	log.Printf("Server running on port %s", port)
-	log.Fatal(http.ListenAndServe(":"+port, corsOptions(r)))
 }
+
+// handlers.AllowedOrigins([]string{"http://localhost:3000", "https://project-manager-server-side-production.up.railway.app/"}),

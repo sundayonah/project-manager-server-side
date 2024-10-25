@@ -1,105 +1,47 @@
-basePath: /api
 definitions:
-  main.Packages:
+  ent.Packages:
     properties:
+      created_at:
+        description: The time the package was created
+        type: string
       description:
+        description: A brief description of the package
         type: string
       id:
-        type: string
+        description: ID of the ent.
+        type: integer
       link:
+        description: The link to the package
         type: string
       name:
+        description: The name of the package
+        type: string
+      updated_at:
+        description: The time the package was last updated
         type: string
     type: object
-  main.Project:
+  ent.Projects:
     properties:
       description:
+        description: Description holds the value of the "description" field.
         type: string
       id:
-        type: string
-      imageUrl:
+        description: ID of the ent.
+        type: integer
+      image_url:
+        description: ImageURL holds the value of the "image_url" field.
         type: string
       link:
+        description: Link holds the value of the "link" field.
         type: string
       name:
+        description: Name holds the value of the "name" field.
         type: string
     type: object
-host: localhost:8080
 info:
   contact: {}
-  description: API for managing packages
-  title: Packages Manager API
-  version: "1.0"
 paths:
-  /api/packages/new:
-    post:
-      consumes:
-      - application/json
-      description: Create a new package with the provided data
-      parameters:
-      - description: Packages data
-        in: body
-        name: package
-        required: true
-        schema:
-          $ref: '#/definitions/main.Packages'
-      produces:
-      - application/json
-      responses:
-        "201":
-          description: Created
-          schema:
-            $ref: '#/definitions/main.Packages'
-        "400":
-          description: Bad Request
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-        "500":
-          description: Internal Server Error
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-      summary: Create a new package
-      tags:
-      - packages
-  /api/projects/new:
-    post:
-      consumes:
-      - application/json
-      description: Create a new project with the provided data
-      parameters:
-      - description: Project data
-        in: body
-        name: project
-        required: true
-        schema:
-          $ref: '#/definitions/main.Project'
-      produces:
-      - application/json
-      responses:
-        "201":
-          description: Created
-          schema:
-            $ref: '#/definitions/main.Project'
-        "400":
-          description: Bad Request
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-        "500":
-          description: Internal Server Error
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-      summary: Create a new project
-      tags:
-      - projects
-  /packages:
+  /api/packages:
     get:
       description: Retrieve a list of all packages
       produces:
@@ -109,79 +51,10 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/main.Packages'
+              $ref: '#/definitions/ent.Packages'
             type: array
       summary: Get all packages
-  /packages/{id}:
-    delete:
-      description: Delete a package by its ID
-      parameters:
-      - description: Packages ID
-        in: path
-        name: id
-        required: true
-        type: string
-      responses:
-        "200":
-          description: OK
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-      summary: Delete a package by ID
-    get:
-      description: Retrieve a package by its ID
-      parameters:
-      - description: Packages ID
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/main.Packages'
-      summary: Get a package by ID
-    put:
-      consumes:
-      - multipart/form-data
-      description: Update an existing package by its ID
-      parameters:
-      - description: Packages ID
-        in: path
-        name: id
-        required: true
-        type: string
-      - description: Packages name
-        in: formData
-        name: name
-        type: string
-      - description: Image URL
-        in: formData
-        name: imageUrl
-        type: string
-      - description: Packages link
-        in: formData
-        name: link
-        type: string
-      - description: Packages description
-        in: formData
-        name: description
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-      summary: Update a package by ID
-  /projects:
+  /api/projects:
     get:
       description: Retrieve a list of all projects
       produces:
@@ -191,18 +64,18 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/main.Project'
+              $ref: '#/definitions/ent.Projects'
             type: array
       summary: Get all projects
-  /projects/{id}:
+  /packages/{id}:
     delete:
-      description: Delete a project by its ID
+      description: Delete a package by ID
       parameters:
-      - description: Project ID
+      - description: packages ID
         in: path
         name: id
         required: true
-        type: string
+        type: integer
       responses:
         "200":
           description: OK
@@ -210,57 +83,106 @@ paths:
             additionalProperties:
               type: string
             type: object
-      summary: Delete a project by ID
+      summary: Delete a package
     get:
-      description: Retrieve a project by its ID
+      description: |-
+        Retrieve a package by its ID
+        Retrieve a package by its ID
       parameters:
-      - description: Project ID
+      - description: Projects ID
         in: path
         name: id
         required: true
-        type: string
+        type: integer
+      - description: Packages ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/ent.Packages'
+      summary: Get a package by ID
+    put:
+      consumes:
+      - application/json
+      description: Update a package by ID
+      parameters:
+      - description: Packages ID
+        in: path
+        name: id
+        required: true
+        type: integer
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/main.Project'
+            $ref: '#/definitions/ent.Packages'
+      summary: Update a package
+  /projects/{id}:
+    delete:
+      description: Delete a project by ID
+      parameters:
+      - description: Projects ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Delete a project
+    get:
+      description: |-
+        Retrieve a project by its ID
+        Retrieve a project by its ID
+      parameters:
+      - description: Projects ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Projects ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/ent.Projects'
       summary: Get a project by ID
     put:
       consumes:
-      - multipart/form-data
-      description: Update an existing project by its ID
+      - application/json
+      description: Update a project by ID
       parameters:
-      - description: Project ID
+      - description: Projects ID
         in: path
         name: id
         required: true
-        type: string
-      - description: Project name
-        in: formData
-        name: name
-        type: string
-      - description: Image URL
-        in: formData
-        name: imageUrl
-        type: string
-      - description: Project link
-        in: formData
-        name: link
-        type: string
-      - description: Project description
-        in: formData
-        name: description
-        type: string
+        type: integer
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            additionalProperties:
-              type: string
-            type: object
-      summary: Update a project by ID
+            $ref: '#/definitions/ent.Projects'
+      summary: Update a project
 swagger: "2.0"

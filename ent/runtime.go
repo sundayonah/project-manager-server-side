@@ -6,6 +6,7 @@ import (
 	"project-manager/ent/packages"
 	"project-manager/ent/projects"
 	"project-manager/ent/schema"
+	"time"
 )
 
 // The init function reads all schema descriptors with runtime code
@@ -17,7 +18,35 @@ func init() {
 	// packagesDescName is the schema descriptor for name field.
 	packagesDescName := packagesFields[0].Descriptor()
 	// packages.NameValidator is a validator for the "name" field. It is called by the builders before save.
-	packages.NameValidator = packagesDescName.Validators[0].(func(string) error)
+	packages.NameValidator = func() func(string) error {
+		validators := packagesDescName.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(name string) error {
+			for _, fn := range fns {
+				if err := fn(name); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// packagesDescDescription is the schema descriptor for description field.
+	packagesDescDescription := packagesFields[2].Descriptor()
+	// packages.DescriptionValidator is a validator for the "description" field. It is called by the builders before save.
+	packages.DescriptionValidator = packagesDescDescription.Validators[0].(func(string) error)
+	// packagesDescCreatedAt is the schema descriptor for created_at field.
+	packagesDescCreatedAt := packagesFields[3].Descriptor()
+	// packages.DefaultCreatedAt holds the default value on creation for the created_at field.
+	packages.DefaultCreatedAt = packagesDescCreatedAt.Default.(func() time.Time)
+	// packagesDescUpdatedAt is the schema descriptor for updated_at field.
+	packagesDescUpdatedAt := packagesFields[4].Descriptor()
+	// packages.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	packages.DefaultUpdatedAt = packagesDescUpdatedAt.Default.(func() time.Time)
+	// packages.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	packages.UpdateDefaultUpdatedAt = packagesDescUpdatedAt.UpdateDefault.(func() time.Time)
 	projectsFields := schema.Projects{}.Fields()
 	_ = projectsFields
 	// projectsDescName is the schema descriptor for name field.

@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"project-manager/ent/packages"
 	"project-manager/ent/predicate"
+	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -81,6 +82,26 @@ func (pu *PackagesUpdate) ClearDescription() *PackagesUpdate {
 	return pu
 }
 
+// SetCreatedAt sets the "created_at" field.
+func (pu *PackagesUpdate) SetCreatedAt(t time.Time) *PackagesUpdate {
+	pu.mutation.SetCreatedAt(t)
+	return pu
+}
+
+// SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
+func (pu *PackagesUpdate) SetNillableCreatedAt(t *time.Time) *PackagesUpdate {
+	if t != nil {
+		pu.SetCreatedAt(*t)
+	}
+	return pu
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (pu *PackagesUpdate) SetUpdatedAt(t time.Time) *PackagesUpdate {
+	pu.mutation.SetUpdatedAt(t)
+	return pu
+}
+
 // Mutation returns the PackagesMutation object of the builder.
 func (pu *PackagesUpdate) Mutation() *PackagesMutation {
 	return pu.mutation
@@ -88,6 +109,7 @@ func (pu *PackagesUpdate) Mutation() *PackagesMutation {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (pu *PackagesUpdate) Save(ctx context.Context) (int, error) {
+	pu.defaults()
 	return withHooks(ctx, pu.sqlSave, pu.mutation, pu.hooks)
 }
 
@@ -113,11 +135,24 @@ func (pu *PackagesUpdate) ExecX(ctx context.Context) {
 	}
 }
 
+// defaults sets the default values of the builder before save.
+func (pu *PackagesUpdate) defaults() {
+	if _, ok := pu.mutation.UpdatedAt(); !ok {
+		v := packages.UpdateDefaultUpdatedAt()
+		pu.mutation.SetUpdatedAt(v)
+	}
+}
+
 // check runs all checks and user-defined validators on the builder.
 func (pu *PackagesUpdate) check() error {
 	if v, ok := pu.mutation.Name(); ok {
 		if err := packages.NameValidator(v); err != nil {
 			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "Packages.name": %w`, err)}
+		}
+	}
+	if v, ok := pu.mutation.Description(); ok {
+		if err := packages.DescriptionValidator(v); err != nil {
+			return &ValidationError{Name: "description", err: fmt.Errorf(`ent: validator failed for field "Packages.description": %w`, err)}
 		}
 	}
 	return nil
@@ -149,6 +184,12 @@ func (pu *PackagesUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if pu.mutation.DescriptionCleared() {
 		_spec.ClearField(packages.FieldDescription, field.TypeString)
+	}
+	if value, ok := pu.mutation.CreatedAt(); ok {
+		_spec.SetField(packages.FieldCreatedAt, field.TypeTime, value)
+	}
+	if value, ok := pu.mutation.UpdatedAt(); ok {
+		_spec.SetField(packages.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if n, err = sqlgraph.UpdateNodes(ctx, pu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -224,6 +265,26 @@ func (puo *PackagesUpdateOne) ClearDescription() *PackagesUpdateOne {
 	return puo
 }
 
+// SetCreatedAt sets the "created_at" field.
+func (puo *PackagesUpdateOne) SetCreatedAt(t time.Time) *PackagesUpdateOne {
+	puo.mutation.SetCreatedAt(t)
+	return puo
+}
+
+// SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
+func (puo *PackagesUpdateOne) SetNillableCreatedAt(t *time.Time) *PackagesUpdateOne {
+	if t != nil {
+		puo.SetCreatedAt(*t)
+	}
+	return puo
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (puo *PackagesUpdateOne) SetUpdatedAt(t time.Time) *PackagesUpdateOne {
+	puo.mutation.SetUpdatedAt(t)
+	return puo
+}
+
 // Mutation returns the PackagesMutation object of the builder.
 func (puo *PackagesUpdateOne) Mutation() *PackagesMutation {
 	return puo.mutation
@@ -244,6 +305,7 @@ func (puo *PackagesUpdateOne) Select(field string, fields ...string) *PackagesUp
 
 // Save executes the query and returns the updated Packages entity.
 func (puo *PackagesUpdateOne) Save(ctx context.Context) (*Packages, error) {
+	puo.defaults()
 	return withHooks(ctx, puo.sqlSave, puo.mutation, puo.hooks)
 }
 
@@ -269,11 +331,24 @@ func (puo *PackagesUpdateOne) ExecX(ctx context.Context) {
 	}
 }
 
+// defaults sets the default values of the builder before save.
+func (puo *PackagesUpdateOne) defaults() {
+	if _, ok := puo.mutation.UpdatedAt(); !ok {
+		v := packages.UpdateDefaultUpdatedAt()
+		puo.mutation.SetUpdatedAt(v)
+	}
+}
+
 // check runs all checks and user-defined validators on the builder.
 func (puo *PackagesUpdateOne) check() error {
 	if v, ok := puo.mutation.Name(); ok {
 		if err := packages.NameValidator(v); err != nil {
 			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "Packages.name": %w`, err)}
+		}
+	}
+	if v, ok := puo.mutation.Description(); ok {
+		if err := packages.DescriptionValidator(v); err != nil {
+			return &ValidationError{Name: "description", err: fmt.Errorf(`ent: validator failed for field "Packages.description": %w`, err)}
 		}
 	}
 	return nil
@@ -322,6 +397,12 @@ func (puo *PackagesUpdateOne) sqlSave(ctx context.Context) (_node *Packages, err
 	}
 	if puo.mutation.DescriptionCleared() {
 		_spec.ClearField(packages.FieldDescription, field.TypeString)
+	}
+	if value, ok := puo.mutation.CreatedAt(); ok {
+		_spec.SetField(packages.FieldCreatedAt, field.TypeTime, value)
+	}
+	if value, ok := puo.mutation.UpdatedAt(); ok {
+		_spec.SetField(packages.FieldUpdatedAt, field.TypeTime, value)
 	}
 	_node = &Packages{config: puo.config}
 	_spec.Assign = _node.assignValues
