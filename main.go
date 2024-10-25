@@ -461,7 +461,8 @@ func main() {
 
 	// CORS middleware
 	corsHandler := handlers.CORS(
-		handlers.AllowedOrigins([]string{"*"}), // Allow all origins for demo purposes
+		handlers.AllowedOrigins([]string{"http://localhost:3000", "https://project-manager-server-side-production.up.railway.app"}),
+		// handlers.AllowedOrigins([]string{"*"}), // Allow all origins for demo purposes
 		handlers.AllowedMethods([]string{"GET", "POST", "PUT", "DELETE"}),
 	)(r)
 
@@ -471,5 +472,3 @@ func main() {
 		log.Fatalf("Could not start server: %v", err)
 	}
 }
-
-// handlers.AllowedOrigins([]string{"http://localhost:3000", "https://project-manager-server-side-production.up.railway.app/"}),
