@@ -89,7 +89,7 @@ func CreateProjectHandler(w http.ResponseWriter, r *http.Request) {
 	// Create project using Ent
 	project, err := client.Projects.Create().
 		SetName(projectData.Name).
-		SetImageURL(projectData.ImageUrl).
+		SetImageUrl(projectData.ImageUrl).
 		SetLink(projectData.Link).
 		SetDescription(projectData.Description).
 		Save(context.Background())
@@ -197,7 +197,7 @@ func UpdateProjectHandler(w http.ResponseWriter, r *http.Request) {
 		update.SetName(*updateData.Name)
 	}
 	if updateData.ImageUrl != nil && *updateData.ImageUrl != "" {
-		update.SetImageURL(*updateData.ImageUrl)
+		update.SetImageUrl(*updateData.ImageUrl)
 	}
 	if updateData.Link != nil && *updateData.Link != "" {
 		update.SetLink(*updateData.Link)
