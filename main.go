@@ -444,26 +444,29 @@ func main() {
 	r := mux.NewRouter()
 
 	// Define your routes
-	r.HandleFunc("/api/projects/new", CreateProjectHandler).Methods("POST")
-	r.HandleFunc("/api/projects", GetProjectsHandler).Methods("GET")
-	r.HandleFunc("/api/projects/{id}", GetProjectByIDHandler).Methods("GET")
-	r.HandleFunc("/api/projects/{id}", UpdateProjectHandler).Methods("PUT")
-	r.HandleFunc("/api/projects/{id}", DeleteProjectHandler).Methods("DELETE")
+	r.HandleFunc("/api/projects/new", CreateProjectHandler).Methods("POST", "OPTIONS")
+	r.HandleFunc("/api/projects", GetProjectsHandler).Methods("GET", "OPTIONS")
+	r.HandleFunc("/api/projects/{id}", GetProjectByIDHandler).Methods("GET", "OPTIONS")
+	r.HandleFunc("/api/projects/{id}", UpdateProjectHandler).Methods("PUT", "OPTIONS")
+	r.HandleFunc("/api/projects/{id}", DeleteProjectHandler).Methods("DELETE", "OPTIONS")
 
-	r.HandleFunc("/api/packages/new", CreatePackageHandler).Methods("POST")
-	r.HandleFunc("/api/packages", GetPackagesHandler).Methods("GET")
-	r.HandleFunc("/api/packages/{id}", GetPackageByIDHandler).Methods("GET")
-	r.HandleFunc("/api/packages/{id}", UpdatePackageHandler).Methods("PUT")
-	r.HandleFunc("/api/packages/{id}", DeletePackageHandler).Methods("DELETE")
+	r.HandleFunc("/api/packages/new", CreatePackageHandler).Methods("POST", "OPTIONS")
+	r.HandleFunc("/api/packages", GetPackagesHandler).Methods("GET", "OPTIONS")
+	r.HandleFunc("/api/packages/{id}", GetPackageByIDHandler).Methods("GET", "OPTIONS")
+	r.HandleFunc("/api/packages/{id}", UpdatePackageHandler).Methods("PUT", "OPTIONS")
+	r.HandleFunc("/api/packages/{id}", DeletePackageHandler).Methods("DELETE", "OPTIONS")
 
 	// Swagger documentation route
 	r.PathPrefix("/swagger/").Handler(httpSwagger.WrapHandler)
 
-	// CORS middleware
+	// Enhanced CORS middleware
 	corsHandler := handlers.CORS(
-		// handlers.AllowedOrigins([]string{"http://localhost:3000", "https://project-manager-server-side-production.up.railway.app"}),
-		handlers.AllowedOrigins([]string{"*"}), // Allow all origins for demo purposes
+		handlers.AllowedOrigins([]string{"http://localhost:3000", "https://project-manager-server-side-production.up.railway.app"}),
 		handlers.AllowedMethods([]string{"GET", "POST", "PUT", "DELETE", "OPTIONS"}),
+		handlers.AllowedHeaders([]string{"Content-Type", "Authorization", "X-Requested-With"}),
+		handlers.AllowCredentials(),
+		handlers.ExposedHeaders([]string{"Content-Length"}),
+		handlers.MaxAge(86400), // 24 hours
 	)(r)
 
 	// Start the server
