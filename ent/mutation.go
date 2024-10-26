@@ -619,7 +619,7 @@ type ProjectsMutation struct {
 	typ           string
 	id            *int
 	name          *string
-	image_url     *string
+	imageUrl      *string
 	link          *string
 	description   *string
 	clearedFields map[string]struct{}
@@ -762,53 +762,53 @@ func (m *ProjectsMutation) ResetName() {
 	m.name = nil
 }
 
-// SetImageURL sets the "image_url" field.
-func (m *ProjectsMutation) SetImageURL(s string) {
-	m.image_url = &s
+// SetImageUrl sets the "imageUrl" field.
+func (m *ProjectsMutation) SetImageUrl(s string) {
+	m.imageUrl = &s
 }
 
-// ImageURL returns the value of the "image_url" field in the mutation.
-func (m *ProjectsMutation) ImageURL() (r string, exists bool) {
-	v := m.image_url
+// ImageUrl returns the value of the "imageUrl" field in the mutation.
+func (m *ProjectsMutation) ImageUrl() (r string, exists bool) {
+	v := m.imageUrl
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldImageURL returns the old "image_url" field's value of the Projects entity.
+// OldImageUrl returns the old "imageUrl" field's value of the Projects entity.
 // If the Projects object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ProjectsMutation) OldImageURL(ctx context.Context) (v string, err error) {
+func (m *ProjectsMutation) OldImageUrl(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldImageURL is only allowed on UpdateOne operations")
+		return v, errors.New("OldImageUrl is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldImageURL requires an ID field in the mutation")
+		return v, errors.New("OldImageUrl requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldImageURL: %w", err)
+		return v, fmt.Errorf("querying old value for OldImageUrl: %w", err)
 	}
-	return oldValue.ImageURL, nil
+	return oldValue.ImageUrl, nil
 }
 
-// ClearImageURL clears the value of the "image_url" field.
-func (m *ProjectsMutation) ClearImageURL() {
-	m.image_url = nil
-	m.clearedFields[projects.FieldImageURL] = struct{}{}
+// ClearImageUrl clears the value of the "imageUrl" field.
+func (m *ProjectsMutation) ClearImageUrl() {
+	m.imageUrl = nil
+	m.clearedFields[projects.FieldImageUrl] = struct{}{}
 }
 
-// ImageURLCleared returns if the "image_url" field was cleared in this mutation.
-func (m *ProjectsMutation) ImageURLCleared() bool {
-	_, ok := m.clearedFields[projects.FieldImageURL]
+// ImageUrlCleared returns if the "imageUrl" field was cleared in this mutation.
+func (m *ProjectsMutation) ImageUrlCleared() bool {
+	_, ok := m.clearedFields[projects.FieldImageUrl]
 	return ok
 }
 
-// ResetImageURL resets all changes to the "image_url" field.
-func (m *ProjectsMutation) ResetImageURL() {
-	m.image_url = nil
-	delete(m.clearedFields, projects.FieldImageURL)
+// ResetImageUrl resets all changes to the "imageUrl" field.
+func (m *ProjectsMutation) ResetImageUrl() {
+	m.imageUrl = nil
+	delete(m.clearedFields, projects.FieldImageUrl)
 }
 
 // SetLink sets the "link" field.
@@ -947,8 +947,8 @@ func (m *ProjectsMutation) Fields() []string {
 	if m.name != nil {
 		fields = append(fields, projects.FieldName)
 	}
-	if m.image_url != nil {
-		fields = append(fields, projects.FieldImageURL)
+	if m.imageUrl != nil {
+		fields = append(fields, projects.FieldImageUrl)
 	}
 	if m.link != nil {
 		fields = append(fields, projects.FieldLink)
@@ -966,8 +966,8 @@ func (m *ProjectsMutation) Field(name string) (ent.Value, bool) {
 	switch name {
 	case projects.FieldName:
 		return m.Name()
-	case projects.FieldImageURL:
-		return m.ImageURL()
+	case projects.FieldImageUrl:
+		return m.ImageUrl()
 	case projects.FieldLink:
 		return m.Link()
 	case projects.FieldDescription:
@@ -983,8 +983,8 @@ func (m *ProjectsMutation) OldField(ctx context.Context, name string) (ent.Value
 	switch name {
 	case projects.FieldName:
 		return m.OldName(ctx)
-	case projects.FieldImageURL:
-		return m.OldImageURL(ctx)
+	case projects.FieldImageUrl:
+		return m.OldImageUrl(ctx)
 	case projects.FieldLink:
 		return m.OldLink(ctx)
 	case projects.FieldDescription:
@@ -1005,12 +1005,12 @@ func (m *ProjectsMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetName(v)
 		return nil
-	case projects.FieldImageURL:
+	case projects.FieldImageUrl:
 		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetImageURL(v)
+		m.SetImageUrl(v)
 		return nil
 	case projects.FieldLink:
 		v, ok := value.(string)
@@ -1056,8 +1056,8 @@ func (m *ProjectsMutation) AddField(name string, value ent.Value) error {
 // mutation.
 func (m *ProjectsMutation) ClearedFields() []string {
 	var fields []string
-	if m.FieldCleared(projects.FieldImageURL) {
-		fields = append(fields, projects.FieldImageURL)
+	if m.FieldCleared(projects.FieldImageUrl) {
+		fields = append(fields, projects.FieldImageUrl)
 	}
 	if m.FieldCleared(projects.FieldLink) {
 		fields = append(fields, projects.FieldLink)
@@ -1079,8 +1079,8 @@ func (m *ProjectsMutation) FieldCleared(name string) bool {
 // error if the field is not defined in the schema.
 func (m *ProjectsMutation) ClearField(name string) error {
 	switch name {
-	case projects.FieldImageURL:
-		m.ClearImageURL()
+	case projects.FieldImageUrl:
+		m.ClearImageUrl()
 		return nil
 	case projects.FieldLink:
 		m.ClearLink()
@@ -1099,8 +1099,8 @@ func (m *ProjectsMutation) ResetField(name string) error {
 	case projects.FieldName:
 		m.ResetName()
 		return nil
-	case projects.FieldImageURL:
-		m.ResetImageURL()
+	case projects.FieldImageUrl:
+		m.ResetImageUrl()
 		return nil
 	case projects.FieldLink:
 		m.ResetLink()

@@ -41,23 +41,23 @@ func (pu *ProjectsUpdate) SetNillableName(s *string) *ProjectsUpdate {
 	return pu
 }
 
-// SetImageURL sets the "image_url" field.
-func (pu *ProjectsUpdate) SetImageURL(s string) *ProjectsUpdate {
-	pu.mutation.SetImageURL(s)
+// SetImageUrl sets the "imageUrl" field.
+func (pu *ProjectsUpdate) SetImageUrl(s string) *ProjectsUpdate {
+	pu.mutation.SetImageUrl(s)
 	return pu
 }
 
-// SetNillableImageURL sets the "image_url" field if the given value is not nil.
-func (pu *ProjectsUpdate) SetNillableImageURL(s *string) *ProjectsUpdate {
+// SetNillableImageUrl sets the "imageUrl" field if the given value is not nil.
+func (pu *ProjectsUpdate) SetNillableImageUrl(s *string) *ProjectsUpdate {
 	if s != nil {
-		pu.SetImageURL(*s)
+		pu.SetImageUrl(*s)
 	}
 	return pu
 }
 
-// ClearImageURL clears the value of the "image_url" field.
-func (pu *ProjectsUpdate) ClearImageURL() *ProjectsUpdate {
-	pu.mutation.ClearImageURL()
+// ClearImageUrl clears the value of the "imageUrl" field.
+func (pu *ProjectsUpdate) ClearImageUrl() *ProjectsUpdate {
+	pu.mutation.ClearImageUrl()
 	return pu
 }
 
@@ -158,11 +158,11 @@ func (pu *ProjectsUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := pu.mutation.Name(); ok {
 		_spec.SetField(projects.FieldName, field.TypeString, value)
 	}
-	if value, ok := pu.mutation.ImageURL(); ok {
-		_spec.SetField(projects.FieldImageURL, field.TypeString, value)
+	if value, ok := pu.mutation.ImageUrl(); ok {
+		_spec.SetField(projects.FieldImageUrl, field.TypeString, value)
 	}
-	if pu.mutation.ImageURLCleared() {
-		_spec.ClearField(projects.FieldImageURL, field.TypeString)
+	if pu.mutation.ImageUrlCleared() {
+		_spec.ClearField(projects.FieldImageUrl, field.TypeString)
 	}
 	if value, ok := pu.mutation.Link(); ok {
 		_spec.SetField(projects.FieldLink, field.TypeString, value)
@@ -210,23 +210,23 @@ func (puo *ProjectsUpdateOne) SetNillableName(s *string) *ProjectsUpdateOne {
 	return puo
 }
 
-// SetImageURL sets the "image_url" field.
-func (puo *ProjectsUpdateOne) SetImageURL(s string) *ProjectsUpdateOne {
-	puo.mutation.SetImageURL(s)
+// SetImageUrl sets the "imageUrl" field.
+func (puo *ProjectsUpdateOne) SetImageUrl(s string) *ProjectsUpdateOne {
+	puo.mutation.SetImageUrl(s)
 	return puo
 }
 
-// SetNillableImageURL sets the "image_url" field if the given value is not nil.
-func (puo *ProjectsUpdateOne) SetNillableImageURL(s *string) *ProjectsUpdateOne {
+// SetNillableImageUrl sets the "imageUrl" field if the given value is not nil.
+func (puo *ProjectsUpdateOne) SetNillableImageUrl(s *string) *ProjectsUpdateOne {
 	if s != nil {
-		puo.SetImageURL(*s)
+		puo.SetImageUrl(*s)
 	}
 	return puo
 }
 
-// ClearImageURL clears the value of the "image_url" field.
-func (puo *ProjectsUpdateOne) ClearImageURL() *ProjectsUpdateOne {
-	puo.mutation.ClearImageURL()
+// ClearImageUrl clears the value of the "imageUrl" field.
+func (puo *ProjectsUpdateOne) ClearImageUrl() *ProjectsUpdateOne {
+	puo.mutation.ClearImageUrl()
 	return puo
 }
 
@@ -357,11 +357,11 @@ func (puo *ProjectsUpdateOne) sqlSave(ctx context.Context) (_node *Projects, err
 	if value, ok := puo.mutation.Name(); ok {
 		_spec.SetField(projects.FieldName, field.TypeString, value)
 	}
-	if value, ok := puo.mutation.ImageURL(); ok {
-		_spec.SetField(projects.FieldImageURL, field.TypeString, value)
+	if value, ok := puo.mutation.ImageUrl(); ok {
+		_spec.SetField(projects.FieldImageUrl, field.TypeString, value)
 	}
-	if puo.mutation.ImageURLCleared() {
-		_spec.ClearField(projects.FieldImageURL, field.TypeString)
+	if puo.mutation.ImageUrlCleared() {
+		_spec.ClearField(projects.FieldImageUrl, field.TypeString)
 	}
 	if value, ok := puo.mutation.Link(); ok {
 		_spec.SetField(projects.FieldLink, field.TypeString, value)

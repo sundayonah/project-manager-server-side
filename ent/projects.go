@@ -18,8 +18,8 @@ type Projects struct {
 	ID int `json:"id,omitempty"`
 	// Name holds the value of the "name" field.
 	Name string `json:"name,omitempty"`
-	// ImageURL holds the value of the "image_url" field.
-	ImageURL string `json:"image_url,omitempty"`
+	// ImageUrl holds the value of the "imageUrl" field.
+	ImageUrl string `json:"imageUrl,omitempty"`
 	// Link holds the value of the "link" field.
 	Link string `json:"link,omitempty"`
 	// Description holds the value of the "description" field.
@@ -34,7 +34,7 @@ func (*Projects) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case projects.FieldID:
 			values[i] = new(sql.NullInt64)
-		case projects.FieldName, projects.FieldImageURL, projects.FieldLink, projects.FieldDescription:
+		case projects.FieldName, projects.FieldImageUrl, projects.FieldLink, projects.FieldDescription:
 			values[i] = new(sql.NullString)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -63,11 +63,11 @@ func (pr *Projects) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				pr.Name = value.String
 			}
-		case projects.FieldImageURL:
+		case projects.FieldImageUrl:
 			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field image_url", values[i])
+				return fmt.Errorf("unexpected type %T for field imageUrl", values[i])
 			} else if value.Valid {
-				pr.ImageURL = value.String
+				pr.ImageUrl = value.String
 			}
 		case projects.FieldLink:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -120,8 +120,8 @@ func (pr *Projects) String() string {
 	builder.WriteString("name=")
 	builder.WriteString(pr.Name)
 	builder.WriteString(", ")
-	builder.WriteString("image_url=")
-	builder.WriteString(pr.ImageURL)
+	builder.WriteString("imageUrl=")
+	builder.WriteString(pr.ImageUrl)
 	builder.WriteString(", ")
 	builder.WriteString("link=")
 	builder.WriteString(pr.Link)

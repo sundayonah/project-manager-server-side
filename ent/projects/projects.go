@@ -13,8 +13,8 @@ const (
 	FieldID = "id"
 	// FieldName holds the string denoting the name field in the database.
 	FieldName = "name"
-	// FieldImageURL holds the string denoting the image_url field in the database.
-	FieldImageURL = "image_url"
+	// FieldImageUrl holds the string denoting the imageurl field in the database.
+	FieldImageUrl = "image_url"
 	// FieldLink holds the string denoting the link field in the database.
 	FieldLink = "link"
 	// FieldDescription holds the string denoting the description field in the database.
@@ -27,7 +27,7 @@ const (
 var Columns = []string{
 	FieldID,
 	FieldName,
-	FieldImageURL,
+	FieldImageUrl,
 	FieldLink,
 	FieldDescription,
 }
@@ -60,9 +60,9 @@ func ByName(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldName, opts...).ToFunc()
 }
 
-// ByImageURL orders the results by the image_url field.
-func ByImageURL(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldImageURL, opts...).ToFunc()
+// ByImageUrl orders the results by the imageUrl field.
+func ByImageUrl(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldImageUrl, opts...).ToFunc()
 }
 
 // ByLink orders the results by the link field.

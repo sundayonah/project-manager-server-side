@@ -25,16 +25,16 @@ func (pc *ProjectsCreate) SetName(s string) *ProjectsCreate {
 	return pc
 }
 
-// SetImageURL sets the "image_url" field.
-func (pc *ProjectsCreate) SetImageURL(s string) *ProjectsCreate {
-	pc.mutation.SetImageURL(s)
+// SetImageUrl sets the "imageUrl" field.
+func (pc *ProjectsCreate) SetImageUrl(s string) *ProjectsCreate {
+	pc.mutation.SetImageUrl(s)
 	return pc
 }
 
-// SetNillableImageURL sets the "image_url" field if the given value is not nil.
-func (pc *ProjectsCreate) SetNillableImageURL(s *string) *ProjectsCreate {
+// SetNillableImageUrl sets the "imageUrl" field if the given value is not nil.
+func (pc *ProjectsCreate) SetNillableImageUrl(s *string) *ProjectsCreate {
 	if s != nil {
-		pc.SetImageURL(*s)
+		pc.SetImageUrl(*s)
 	}
 	return pc
 }
@@ -139,9 +139,9 @@ func (pc *ProjectsCreate) createSpec() (*Projects, *sqlgraph.CreateSpec) {
 		_spec.SetField(projects.FieldName, field.TypeString, value)
 		_node.Name = value
 	}
-	if value, ok := pc.mutation.ImageURL(); ok {
-		_spec.SetField(projects.FieldImageURL, field.TypeString, value)
-		_node.ImageURL = value
+	if value, ok := pc.mutation.ImageUrl(); ok {
+		_spec.SetField(projects.FieldImageUrl, field.TypeString, value)
+		_node.ImageUrl = value
 	}
 	if value, ok := pc.mutation.Link(); ok {
 		_spec.SetField(projects.FieldLink, field.TypeString, value)

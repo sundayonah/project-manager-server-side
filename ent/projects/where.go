@@ -58,9 +58,9 @@ func Name(v string) predicate.Projects {
 	return predicate.Projects(sql.FieldEQ(FieldName, v))
 }
 
-// ImageURL applies equality check predicate on the "image_url" field. It's identical to ImageURLEQ.
-func ImageURL(v string) predicate.Projects {
-	return predicate.Projects(sql.FieldEQ(FieldImageURL, v))
+// ImageUrl applies equality check predicate on the "imageUrl" field. It's identical to ImageUrlEQ.
+func ImageUrl(v string) predicate.Projects {
+	return predicate.Projects(sql.FieldEQ(FieldImageUrl, v))
 }
 
 // Link applies equality check predicate on the "link" field. It's identical to LinkEQ.
@@ -138,79 +138,79 @@ func NameContainsFold(v string) predicate.Projects {
 	return predicate.Projects(sql.FieldContainsFold(FieldName, v))
 }
 
-// ImageURLEQ applies the EQ predicate on the "image_url" field.
-func ImageURLEQ(v string) predicate.Projects {
-	return predicate.Projects(sql.FieldEQ(FieldImageURL, v))
+// ImageUrlEQ applies the EQ predicate on the "imageUrl" field.
+func ImageUrlEQ(v string) predicate.Projects {
+	return predicate.Projects(sql.FieldEQ(FieldImageUrl, v))
 }
 
-// ImageURLNEQ applies the NEQ predicate on the "image_url" field.
-func ImageURLNEQ(v string) predicate.Projects {
-	return predicate.Projects(sql.FieldNEQ(FieldImageURL, v))
+// ImageUrlNEQ applies the NEQ predicate on the "imageUrl" field.
+func ImageUrlNEQ(v string) predicate.Projects {
+	return predicate.Projects(sql.FieldNEQ(FieldImageUrl, v))
 }
 
-// ImageURLIn applies the In predicate on the "image_url" field.
-func ImageURLIn(vs ...string) predicate.Projects {
-	return predicate.Projects(sql.FieldIn(FieldImageURL, vs...))
+// ImageUrlIn applies the In predicate on the "imageUrl" field.
+func ImageUrlIn(vs ...string) predicate.Projects {
+	return predicate.Projects(sql.FieldIn(FieldImageUrl, vs...))
 }
 
-// ImageURLNotIn applies the NotIn predicate on the "image_url" field.
-func ImageURLNotIn(vs ...string) predicate.Projects {
-	return predicate.Projects(sql.FieldNotIn(FieldImageURL, vs...))
+// ImageUrlNotIn applies the NotIn predicate on the "imageUrl" field.
+func ImageUrlNotIn(vs ...string) predicate.Projects {
+	return predicate.Projects(sql.FieldNotIn(FieldImageUrl, vs...))
 }
 
-// ImageURLGT applies the GT predicate on the "image_url" field.
-func ImageURLGT(v string) predicate.Projects {
-	return predicate.Projects(sql.FieldGT(FieldImageURL, v))
+// ImageUrlGT applies the GT predicate on the "imageUrl" field.
+func ImageUrlGT(v string) predicate.Projects {
+	return predicate.Projects(sql.FieldGT(FieldImageUrl, v))
 }
 
-// ImageURLGTE applies the GTE predicate on the "image_url" field.
-func ImageURLGTE(v string) predicate.Projects {
-	return predicate.Projects(sql.FieldGTE(FieldImageURL, v))
+// ImageUrlGTE applies the GTE predicate on the "imageUrl" field.
+func ImageUrlGTE(v string) predicate.Projects {
+	return predicate.Projects(sql.FieldGTE(FieldImageUrl, v))
 }
 
-// ImageURLLT applies the LT predicate on the "image_url" field.
-func ImageURLLT(v string) predicate.Projects {
-	return predicate.Projects(sql.FieldLT(FieldImageURL, v))
+// ImageUrlLT applies the LT predicate on the "imageUrl" field.
+func ImageUrlLT(v string) predicate.Projects {
+	return predicate.Projects(sql.FieldLT(FieldImageUrl, v))
 }
 
-// ImageURLLTE applies the LTE predicate on the "image_url" field.
-func ImageURLLTE(v string) predicate.Projects {
-	return predicate.Projects(sql.FieldLTE(FieldImageURL, v))
+// ImageUrlLTE applies the LTE predicate on the "imageUrl" field.
+func ImageUrlLTE(v string) predicate.Projects {
+	return predicate.Projects(sql.FieldLTE(FieldImageUrl, v))
 }
 
-// ImageURLContains applies the Contains predicate on the "image_url" field.
-func ImageURLContains(v string) predicate.Projects {
-	return predicate.Projects(sql.FieldContains(FieldImageURL, v))
+// ImageUrlContains applies the Contains predicate on the "imageUrl" field.
+func ImageUrlContains(v string) predicate.Projects {
+	return predicate.Projects(sql.FieldContains(FieldImageUrl, v))
 }
 
-// ImageURLHasPrefix applies the HasPrefix predicate on the "image_url" field.
-func ImageURLHasPrefix(v string) predicate.Projects {
-	return predicate.Projects(sql.FieldHasPrefix(FieldImageURL, v))
+// ImageUrlHasPrefix applies the HasPrefix predicate on the "imageUrl" field.
+func ImageUrlHasPrefix(v string) predicate.Projects {
+	return predicate.Projects(sql.FieldHasPrefix(FieldImageUrl, v))
 }
 
-// ImageURLHasSuffix applies the HasSuffix predicate on the "image_url" field.
-func ImageURLHasSuffix(v string) predicate.Projects {
-	return predicate.Projects(sql.FieldHasSuffix(FieldImageURL, v))
+// ImageUrlHasSuffix applies the HasSuffix predicate on the "imageUrl" field.
+func ImageUrlHasSuffix(v string) predicate.Projects {
+	return predicate.Projects(sql.FieldHasSuffix(FieldImageUrl, v))
 }
 
-// ImageURLIsNil applies the IsNil predicate on the "image_url" field.
-func ImageURLIsNil() predicate.Projects {
-	return predicate.Projects(sql.FieldIsNull(FieldImageURL))
+// ImageUrlIsNil applies the IsNil predicate on the "imageUrl" field.
+func ImageUrlIsNil() predicate.Projects {
+	return predicate.Projects(sql.FieldIsNull(FieldImageUrl))
 }
 
-// ImageURLNotNil applies the NotNil predicate on the "image_url" field.
-func ImageURLNotNil() predicate.Projects {
-	return predicate.Projects(sql.FieldNotNull(FieldImageURL))
+// ImageUrlNotNil applies the NotNil predicate on the "imageUrl" field.
+func ImageUrlNotNil() predicate.Projects {
+	return predicate.Projects(sql.FieldNotNull(FieldImageUrl))
 }
 
-// ImageURLEqualFold applies the EqualFold predicate on the "image_url" field.
-func ImageURLEqualFold(v string) predicate.Projects {
-	return predicate.Projects(sql.FieldEqualFold(FieldImageURL, v))
+// ImageUrlEqualFold applies the EqualFold predicate on the "imageUrl" field.
+func ImageUrlEqualFold(v string) predicate.Projects {
+	return predicate.Projects(sql.FieldEqualFold(FieldImageUrl, v))
 }
 
-// ImageURLContainsFold applies the ContainsFold predicate on the "image_url" field.
-func ImageURLContainsFold(v string) predicate.Projects {
-	return predicate.Projects(sql.FieldContainsFold(FieldImageURL, v))
+// ImageUrlContainsFold applies the ContainsFold predicate on the "imageUrl" field.
+func ImageUrlContainsFold(v string) predicate.Projects {
+	return predicate.Projects(sql.FieldContainsFold(FieldImageUrl, v))
 }
 
 // LinkEQ applies the EQ predicate on the "link" field.

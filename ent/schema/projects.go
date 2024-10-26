@@ -12,7 +12,7 @@ type Projects struct {
 func (Projects) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("name").NotEmpty(),
-		field.String("image_url").Optional(),
+		field.String("imageUrl").Optional(),
 		field.String("link").Optional(),
 		field.String("description").Optional(),
 	}
