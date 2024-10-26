@@ -461,8 +461,8 @@ func main() {
 
 	// CORS middleware
 	corsHandler := handlers.CORS(
-		handlers.AllowedOrigins([]string{"http://localhost:3000", "https://project-manager-server-side-production.up.railway.app"}),
-		// handlers.AllowedOrigins([]string{"*"}), // Allow all origins for demo purposes
+		// handlers.AllowedOrigins([]string{"http://localhost:3000", "https://project-manager-server-side-production.up.railway.app"}),
+		handlers.AllowedOrigins([]string{"*"}), // Allow all origins for demo purposes
 		handlers.AllowedMethods([]string{"GET", "POST", "PUT", "DELETE", "OPTIONS"}),
 	)(r)
 
