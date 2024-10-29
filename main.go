@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"strconv"
 
 	"project-manager/ent"
@@ -48,8 +49,7 @@ type PackageResponse struct {
 // Initialize Database connection
 func InitDB() (*ent.Client, error) {
 	// Load environment variables
-	// connectionString := os.Getenv("DATABASE_URL")
-	connectionString := "postgresql://postgres:Encoded.001@localhost:5432/project-manager?sslmode=disable"
+	connectionString := os.Getenv("DATABASE_URL")
 	if connectionString == "" {
 		return nil, fmt.Errorf("database URL not found in environment variables")
 	}
