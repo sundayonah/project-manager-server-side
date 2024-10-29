@@ -82,6 +82,20 @@ func (pu *PackagesUpdate) ClearDescription() *PackagesUpdate {
 	return pu
 }
 
+// SetStacks sets the "stacks" field.
+func (pu *PackagesUpdate) SetStacks(s string) *PackagesUpdate {
+	pu.mutation.SetStacks(s)
+	return pu
+}
+
+// SetNillableStacks sets the "stacks" field if the given value is not nil.
+func (pu *PackagesUpdate) SetNillableStacks(s *string) *PackagesUpdate {
+	if s != nil {
+		pu.SetStacks(*s)
+	}
+	return pu
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (pu *PackagesUpdate) SetCreatedAt(t time.Time) *PackagesUpdate {
 	pu.mutation.SetCreatedAt(t)
@@ -185,6 +199,9 @@ func (pu *PackagesUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if pu.mutation.DescriptionCleared() {
 		_spec.ClearField(packages.FieldDescription, field.TypeString)
 	}
+	if value, ok := pu.mutation.Stacks(); ok {
+		_spec.SetField(packages.FieldStacks, field.TypeString, value)
+	}
 	if value, ok := pu.mutation.CreatedAt(); ok {
 		_spec.SetField(packages.FieldCreatedAt, field.TypeTime, value)
 	}
@@ -262,6 +279,20 @@ func (puo *PackagesUpdateOne) SetNillableDescription(s *string) *PackagesUpdateO
 // ClearDescription clears the value of the "description" field.
 func (puo *PackagesUpdateOne) ClearDescription() *PackagesUpdateOne {
 	puo.mutation.ClearDescription()
+	return puo
+}
+
+// SetStacks sets the "stacks" field.
+func (puo *PackagesUpdateOne) SetStacks(s string) *PackagesUpdateOne {
+	puo.mutation.SetStacks(s)
+	return puo
+}
+
+// SetNillableStacks sets the "stacks" field if the given value is not nil.
+func (puo *PackagesUpdateOne) SetNillableStacks(s *string) *PackagesUpdateOne {
+	if s != nil {
+		puo.SetStacks(*s)
+	}
 	return puo
 }
 
@@ -397,6 +428,9 @@ func (puo *PackagesUpdateOne) sqlSave(ctx context.Context) (_node *Packages, err
 	}
 	if puo.mutation.DescriptionCleared() {
 		_spec.ClearField(packages.FieldDescription, field.TypeString)
+	}
+	if value, ok := puo.mutation.Stacks(); ok {
+		_spec.SetField(packages.FieldStacks, field.TypeString, value)
 	}
 	if value, ok := puo.mutation.CreatedAt(); ok {
 		_spec.SetField(packages.FieldCreatedAt, field.TypeTime, value)

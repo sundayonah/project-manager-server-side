@@ -37,12 +37,16 @@ func init() {
 	packagesDescDescription := packagesFields[2].Descriptor()
 	// packages.DescriptionValidator is a validator for the "description" field. It is called by the builders before save.
 	packages.DescriptionValidator = packagesDescDescription.Validators[0].(func(string) error)
+	// packagesDescStacks is the schema descriptor for stacks field.
+	packagesDescStacks := packagesFields[3].Descriptor()
+	// packages.DefaultStacks holds the default value on creation for the stacks field.
+	packages.DefaultStacks = packagesDescStacks.Default.(string)
 	// packagesDescCreatedAt is the schema descriptor for created_at field.
-	packagesDescCreatedAt := packagesFields[3].Descriptor()
+	packagesDescCreatedAt := packagesFields[4].Descriptor()
 	// packages.DefaultCreatedAt holds the default value on creation for the created_at field.
 	packages.DefaultCreatedAt = packagesDescCreatedAt.Default.(func() time.Time)
 	// packagesDescUpdatedAt is the schema descriptor for updated_at field.
-	packagesDescUpdatedAt := packagesFields[4].Descriptor()
+	packagesDescUpdatedAt := packagesFields[5].Descriptor()
 	// packages.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	packages.DefaultUpdatedAt = packagesDescUpdatedAt.Default.(func() time.Time)
 	// packages.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
@@ -53,4 +57,8 @@ func init() {
 	projectsDescName := projectsFields[0].Descriptor()
 	// projects.NameValidator is a validator for the "name" field. It is called by the builders before save.
 	projects.NameValidator = projectsDescName.Validators[0].(func(string) error)
+	// projectsDescStacks is the schema descriptor for stacks field.
+	projectsDescStacks := projectsFields[4].Descriptor()
+	// projects.DefaultStacks holds the default value on creation for the stacks field.
+	projects.DefaultStacks = projectsDescStacks.Default.(string)
 }

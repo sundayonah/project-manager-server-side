@@ -19,6 +19,8 @@ const (
 	FieldLink = "link"
 	// FieldDescription holds the string denoting the description field in the database.
 	FieldDescription = "description"
+	// FieldStacks holds the string denoting the stacks field in the database.
+	FieldStacks = "stacks"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
 	FieldCreatedAt = "created_at"
 	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
@@ -33,6 +35,7 @@ var Columns = []string{
 	FieldName,
 	FieldLink,
 	FieldDescription,
+	FieldStacks,
 	FieldCreatedAt,
 	FieldUpdatedAt,
 }
@@ -52,6 +55,8 @@ var (
 	NameValidator func(string) error
 	// DescriptionValidator is a validator for the "description" field. It is called by the builders before save.
 	DescriptionValidator func(string) error
+	// DefaultStacks holds the default value on creation for the "stacks" field.
+	DefaultStacks string
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
 	DefaultCreatedAt func() time.Time
 	// DefaultUpdatedAt holds the default value on creation for the "updated_at" field.
@@ -81,6 +86,11 @@ func ByLink(opts ...sql.OrderTermOption) OrderOption {
 // ByDescription orders the results by the description field.
 func ByDescription(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldDescription, opts...).ToFunc()
+}
+
+// ByStacks orders the results by the stacks field.
+func ByStacks(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldStacks, opts...).ToFunc()
 }
 
 // ByCreatedAt orders the results by the created_at field.

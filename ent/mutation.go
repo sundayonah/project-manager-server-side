@@ -38,6 +38,7 @@ type PackagesMutation struct {
 	name          *string
 	link          *string
 	description   *string
+	stacks        *string
 	created_at    *time.Time
 	updated_at    *time.Time
 	clearedFields map[string]struct{}
@@ -278,6 +279,42 @@ func (m *PackagesMutation) ResetDescription() {
 	delete(m.clearedFields, packages.FieldDescription)
 }
 
+// SetStacks sets the "stacks" field.
+func (m *PackagesMutation) SetStacks(s string) {
+	m.stacks = &s
+}
+
+// Stacks returns the value of the "stacks" field in the mutation.
+func (m *PackagesMutation) Stacks() (r string, exists bool) {
+	v := m.stacks
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldStacks returns the old "stacks" field's value of the Packages entity.
+// If the Packages object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PackagesMutation) OldStacks(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldStacks is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldStacks requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldStacks: %w", err)
+	}
+	return oldValue.Stacks, nil
+}
+
+// ResetStacks resets all changes to the "stacks" field.
+func (m *PackagesMutation) ResetStacks() {
+	m.stacks = nil
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (m *PackagesMutation) SetCreatedAt(t time.Time) {
 	m.created_at = &t
@@ -384,7 +421,7 @@ func (m *PackagesMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *PackagesMutation) Fields() []string {
-	fields := make([]string, 0, 5)
+	fields := make([]string, 0, 6)
 	if m.name != nil {
 		fields = append(fields, packages.FieldName)
 	}
@@ -393,6 +430,9 @@ func (m *PackagesMutation) Fields() []string {
 	}
 	if m.description != nil {
 		fields = append(fields, packages.FieldDescription)
+	}
+	if m.stacks != nil {
+		fields = append(fields, packages.FieldStacks)
 	}
 	if m.created_at != nil {
 		fields = append(fields, packages.FieldCreatedAt)
@@ -414,6 +454,8 @@ func (m *PackagesMutation) Field(name string) (ent.Value, bool) {
 		return m.Link()
 	case packages.FieldDescription:
 		return m.Description()
+	case packages.FieldStacks:
+		return m.Stacks()
 	case packages.FieldCreatedAt:
 		return m.CreatedAt()
 	case packages.FieldUpdatedAt:
@@ -433,6 +475,8 @@ func (m *PackagesMutation) OldField(ctx context.Context, name string) (ent.Value
 		return m.OldLink(ctx)
 	case packages.FieldDescription:
 		return m.OldDescription(ctx)
+	case packages.FieldStacks:
+		return m.OldStacks(ctx)
 	case packages.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
 	case packages.FieldUpdatedAt:
@@ -466,6 +510,13 @@ func (m *PackagesMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetDescription(v)
+		return nil
+	case packages.FieldStacks:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetStacks(v)
 		return nil
 	case packages.FieldCreatedAt:
 		v, ok := value.(time.Time)
@@ -554,6 +605,9 @@ func (m *PackagesMutation) ResetField(name string) error {
 	case packages.FieldDescription:
 		m.ResetDescription()
 		return nil
+	case packages.FieldStacks:
+		m.ResetStacks()
+		return nil
 	case packages.FieldCreatedAt:
 		m.ResetCreatedAt()
 		return nil
@@ -622,6 +676,7 @@ type ProjectsMutation struct {
 	imageUrl      *string
 	link          *string
 	description   *string
+	stacks        *string
 	clearedFields map[string]struct{}
 	done          bool
 	oldValue      func(context.Context) (*Projects, error)
@@ -909,6 +964,42 @@ func (m *ProjectsMutation) ResetDescription() {
 	delete(m.clearedFields, projects.FieldDescription)
 }
 
+// SetStacks sets the "stacks" field.
+func (m *ProjectsMutation) SetStacks(s string) {
+	m.stacks = &s
+}
+
+// Stacks returns the value of the "stacks" field in the mutation.
+func (m *ProjectsMutation) Stacks() (r string, exists bool) {
+	v := m.stacks
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldStacks returns the old "stacks" field's value of the Projects entity.
+// If the Projects object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ProjectsMutation) OldStacks(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldStacks is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldStacks requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldStacks: %w", err)
+	}
+	return oldValue.Stacks, nil
+}
+
+// ResetStacks resets all changes to the "stacks" field.
+func (m *ProjectsMutation) ResetStacks() {
+	m.stacks = nil
+}
+
 // Where appends a list predicates to the ProjectsMutation builder.
 func (m *ProjectsMutation) Where(ps ...predicate.Projects) {
 	m.predicates = append(m.predicates, ps...)
@@ -943,7 +1034,7 @@ func (m *ProjectsMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *ProjectsMutation) Fields() []string {
-	fields := make([]string, 0, 4)
+	fields := make([]string, 0, 5)
 	if m.name != nil {
 		fields = append(fields, projects.FieldName)
 	}
@@ -955,6 +1046,9 @@ func (m *ProjectsMutation) Fields() []string {
 	}
 	if m.description != nil {
 		fields = append(fields, projects.FieldDescription)
+	}
+	if m.stacks != nil {
+		fields = append(fields, projects.FieldStacks)
 	}
 	return fields
 }
@@ -972,6 +1066,8 @@ func (m *ProjectsMutation) Field(name string) (ent.Value, bool) {
 		return m.Link()
 	case projects.FieldDescription:
 		return m.Description()
+	case projects.FieldStacks:
+		return m.Stacks()
 	}
 	return nil, false
 }
@@ -989,6 +1085,8 @@ func (m *ProjectsMutation) OldField(ctx context.Context, name string) (ent.Value
 		return m.OldLink(ctx)
 	case projects.FieldDescription:
 		return m.OldDescription(ctx)
+	case projects.FieldStacks:
+		return m.OldStacks(ctx)
 	}
 	return nil, fmt.Errorf("unknown Projects field %s", name)
 }
@@ -1025,6 +1123,13 @@ func (m *ProjectsMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetDescription(v)
+		return nil
+	case projects.FieldStacks:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetStacks(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Projects field %s", name)
@@ -1107,6 +1212,9 @@ func (m *ProjectsMutation) ResetField(name string) error {
 		return nil
 	case projects.FieldDescription:
 		m.ResetDescription()
+		return nil
+	case projects.FieldStacks:
+		m.ResetStacks()
 		return nil
 	}
 	return fmt.Errorf("unknown Projects field %s", name)

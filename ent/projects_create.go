@@ -67,6 +67,20 @@ func (pc *ProjectsCreate) SetNillableDescription(s *string) *ProjectsCreate {
 	return pc
 }
 
+// SetStacks sets the "stacks" field.
+func (pc *ProjectsCreate) SetStacks(s string) *ProjectsCreate {
+	pc.mutation.SetStacks(s)
+	return pc
+}
+
+// SetNillableStacks sets the "stacks" field if the given value is not nil.
+func (pc *ProjectsCreate) SetNillableStacks(s *string) *ProjectsCreate {
+	if s != nil {
+		pc.SetStacks(*s)
+	}
+	return pc
+}
+
 // Mutation returns the ProjectsMutation object of the builder.
 func (pc *ProjectsCreate) Mutation() *ProjectsMutation {
 	return pc.mutation
@@ -74,6 +88,7 @@ func (pc *ProjectsCreate) Mutation() *ProjectsMutation {
 
 // Save creates the Projects in the database.
 func (pc *ProjectsCreate) Save(ctx context.Context) (*Projects, error) {
+	pc.defaults()
 	return withHooks(ctx, pc.sqlSave, pc.mutation, pc.hooks)
 }
 
@@ -99,6 +114,14 @@ func (pc *ProjectsCreate) ExecX(ctx context.Context) {
 	}
 }
 
+// defaults sets the default values of the builder before save.
+func (pc *ProjectsCreate) defaults() {
+	if _, ok := pc.mutation.Stacks(); !ok {
+		v := projects.DefaultStacks
+		pc.mutation.SetStacks(v)
+	}
+}
+
 // check runs all checks and user-defined validators on the builder.
 func (pc *ProjectsCreate) check() error {
 	if _, ok := pc.mutation.Name(); !ok {
@@ -108,6 +131,9 @@ func (pc *ProjectsCreate) check() error {
 		if err := projects.NameValidator(v); err != nil {
 			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "Projects.name": %w`, err)}
 		}
+	}
+	if _, ok := pc.mutation.Stacks(); !ok {
+		return &ValidationError{Name: "stacks", err: errors.New(`ent: missing required field "Projects.stacks"`)}
 	}
 	return nil
 }
@@ -151,6 +177,10 @@ func (pc *ProjectsCreate) createSpec() (*Projects, *sqlgraph.CreateSpec) {
 		_spec.SetField(projects.FieldDescription, field.TypeString, value)
 		_node.Description = value
 	}
+	if value, ok := pc.mutation.Stacks(); ok {
+		_spec.SetField(projects.FieldStacks, field.TypeString, value)
+		_node.Stacks = value
+	}
 	return _node, _spec
 }
 
@@ -172,6 +202,7 @@ func (pcb *ProjectsCreateBulk) Save(ctx context.Context) ([]*Projects, error) {
 	for i := range pcb.builders {
 		func(i int, root context.Context) {
 			builder := pcb.builders[i]
+			builder.defaults()
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 				mutation, ok := m.(*ProjectsMutation)
 				if !ok {

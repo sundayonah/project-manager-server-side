@@ -19,6 +19,8 @@ const (
 	FieldLink = "link"
 	// FieldDescription holds the string denoting the description field in the database.
 	FieldDescription = "description"
+	// FieldStacks holds the string denoting the stacks field in the database.
+	FieldStacks = "stacks"
 	// Table holds the table name of the projects in the database.
 	Table = "projects"
 )
@@ -30,6 +32,7 @@ var Columns = []string{
 	FieldImageUrl,
 	FieldLink,
 	FieldDescription,
+	FieldStacks,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -45,6 +48,8 @@ func ValidColumn(column string) bool {
 var (
 	// NameValidator is a validator for the "name" field. It is called by the builders before save.
 	NameValidator func(string) error
+	// DefaultStacks holds the default value on creation for the "stacks" field.
+	DefaultStacks string
 )
 
 // OrderOption defines the ordering options for the Projects queries.
@@ -73,4 +78,9 @@ func ByLink(opts ...sql.OrderTermOption) OrderOption {
 // ByDescription orders the results by the description field.
 func ByDescription(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldDescription, opts...).ToFunc()
+}
+
+// ByStacks orders the results by the stacks field.
+func ByStacks(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldStacks, opts...).ToFunc()
 }

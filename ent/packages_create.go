@@ -54,6 +54,20 @@ func (pc *PackagesCreate) SetNillableDescription(s *string) *PackagesCreate {
 	return pc
 }
 
+// SetStacks sets the "stacks" field.
+func (pc *PackagesCreate) SetStacks(s string) *PackagesCreate {
+	pc.mutation.SetStacks(s)
+	return pc
+}
+
+// SetNillableStacks sets the "stacks" field if the given value is not nil.
+func (pc *PackagesCreate) SetNillableStacks(s *string) *PackagesCreate {
+	if s != nil {
+		pc.SetStacks(*s)
+	}
+	return pc
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (pc *PackagesCreate) SetCreatedAt(t time.Time) *PackagesCreate {
 	pc.mutation.SetCreatedAt(t)
@@ -117,6 +131,10 @@ func (pc *PackagesCreate) ExecX(ctx context.Context) {
 
 // defaults sets the default values of the builder before save.
 func (pc *PackagesCreate) defaults() {
+	if _, ok := pc.mutation.Stacks(); !ok {
+		v := packages.DefaultStacks
+		pc.mutation.SetStacks(v)
+	}
 	if _, ok := pc.mutation.CreatedAt(); !ok {
 		v := packages.DefaultCreatedAt()
 		pc.mutation.SetCreatedAt(v)
@@ -141,6 +159,9 @@ func (pc *PackagesCreate) check() error {
 		if err := packages.DescriptionValidator(v); err != nil {
 			return &ValidationError{Name: "description", err: fmt.Errorf(`ent: validator failed for field "Packages.description": %w`, err)}
 		}
+	}
+	if _, ok := pc.mutation.Stacks(); !ok {
+		return &ValidationError{Name: "stacks", err: errors.New(`ent: missing required field "Packages.stacks"`)}
 	}
 	if _, ok := pc.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "Packages.created_at"`)}
@@ -185,6 +206,10 @@ func (pc *PackagesCreate) createSpec() (*Packages, *sqlgraph.CreateSpec) {
 	if value, ok := pc.mutation.Description(); ok {
 		_spec.SetField(packages.FieldDescription, field.TypeString, value)
 		_node.Description = value
+	}
+	if value, ok := pc.mutation.Stacks(); ok {
+		_spec.SetField(packages.FieldStacks, field.TypeString, value)
+		_node.Stacks = value
 	}
 	if value, ok := pc.mutation.CreatedAt(); ok {
 		_spec.SetField(packages.FieldCreatedAt, field.TypeTime, value)

@@ -69,6 +69,11 @@ func Description(v string) predicate.Packages {
 	return predicate.Packages(sql.FieldEQ(FieldDescription, v))
 }
 
+// Stacks applies equality check predicate on the "stacks" field. It's identical to StacksEQ.
+func Stacks(v string) predicate.Packages {
+	return predicate.Packages(sql.FieldEQ(FieldStacks, v))
+}
+
 // CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
 func CreatedAt(v time.Time) predicate.Packages {
 	return predicate.Packages(sql.FieldEQ(FieldCreatedAt, v))
@@ -292,6 +297,71 @@ func DescriptionEqualFold(v string) predicate.Packages {
 // DescriptionContainsFold applies the ContainsFold predicate on the "description" field.
 func DescriptionContainsFold(v string) predicate.Packages {
 	return predicate.Packages(sql.FieldContainsFold(FieldDescription, v))
+}
+
+// StacksEQ applies the EQ predicate on the "stacks" field.
+func StacksEQ(v string) predicate.Packages {
+	return predicate.Packages(sql.FieldEQ(FieldStacks, v))
+}
+
+// StacksNEQ applies the NEQ predicate on the "stacks" field.
+func StacksNEQ(v string) predicate.Packages {
+	return predicate.Packages(sql.FieldNEQ(FieldStacks, v))
+}
+
+// StacksIn applies the In predicate on the "stacks" field.
+func StacksIn(vs ...string) predicate.Packages {
+	return predicate.Packages(sql.FieldIn(FieldStacks, vs...))
+}
+
+// StacksNotIn applies the NotIn predicate on the "stacks" field.
+func StacksNotIn(vs ...string) predicate.Packages {
+	return predicate.Packages(sql.FieldNotIn(FieldStacks, vs...))
+}
+
+// StacksGT applies the GT predicate on the "stacks" field.
+func StacksGT(v string) predicate.Packages {
+	return predicate.Packages(sql.FieldGT(FieldStacks, v))
+}
+
+// StacksGTE applies the GTE predicate on the "stacks" field.
+func StacksGTE(v string) predicate.Packages {
+	return predicate.Packages(sql.FieldGTE(FieldStacks, v))
+}
+
+// StacksLT applies the LT predicate on the "stacks" field.
+func StacksLT(v string) predicate.Packages {
+	return predicate.Packages(sql.FieldLT(FieldStacks, v))
+}
+
+// StacksLTE applies the LTE predicate on the "stacks" field.
+func StacksLTE(v string) predicate.Packages {
+	return predicate.Packages(sql.FieldLTE(FieldStacks, v))
+}
+
+// StacksContains applies the Contains predicate on the "stacks" field.
+func StacksContains(v string) predicate.Packages {
+	return predicate.Packages(sql.FieldContains(FieldStacks, v))
+}
+
+// StacksHasPrefix applies the HasPrefix predicate on the "stacks" field.
+func StacksHasPrefix(v string) predicate.Packages {
+	return predicate.Packages(sql.FieldHasPrefix(FieldStacks, v))
+}
+
+// StacksHasSuffix applies the HasSuffix predicate on the "stacks" field.
+func StacksHasSuffix(v string) predicate.Packages {
+	return predicate.Packages(sql.FieldHasSuffix(FieldStacks, v))
+}
+
+// StacksEqualFold applies the EqualFold predicate on the "stacks" field.
+func StacksEqualFold(v string) predicate.Packages {
+	return predicate.Packages(sql.FieldEqualFold(FieldStacks, v))
+}
+
+// StacksContainsFold applies the ContainsFold predicate on the "stacks" field.
+func StacksContainsFold(v string) predicate.Packages {
+	return predicate.Packages(sql.FieldContainsFold(FieldStacks, v))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.

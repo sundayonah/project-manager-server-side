@@ -101,6 +101,20 @@ func (pu *ProjectsUpdate) ClearDescription() *ProjectsUpdate {
 	return pu
 }
 
+// SetStacks sets the "stacks" field.
+func (pu *ProjectsUpdate) SetStacks(s string) *ProjectsUpdate {
+	pu.mutation.SetStacks(s)
+	return pu
+}
+
+// SetNillableStacks sets the "stacks" field if the given value is not nil.
+func (pu *ProjectsUpdate) SetNillableStacks(s *string) *ProjectsUpdate {
+	if s != nil {
+		pu.SetStacks(*s)
+	}
+	return pu
+}
+
 // Mutation returns the ProjectsMutation object of the builder.
 func (pu *ProjectsUpdate) Mutation() *ProjectsMutation {
 	return pu.mutation
@@ -175,6 +189,9 @@ func (pu *ProjectsUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if pu.mutation.DescriptionCleared() {
 		_spec.ClearField(projects.FieldDescription, field.TypeString)
+	}
+	if value, ok := pu.mutation.Stacks(); ok {
+		_spec.SetField(projects.FieldStacks, field.TypeString, value)
 	}
 	if n, err = sqlgraph.UpdateNodes(ctx, pu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -267,6 +284,20 @@ func (puo *ProjectsUpdateOne) SetNillableDescription(s *string) *ProjectsUpdateO
 // ClearDescription clears the value of the "description" field.
 func (puo *ProjectsUpdateOne) ClearDescription() *ProjectsUpdateOne {
 	puo.mutation.ClearDescription()
+	return puo
+}
+
+// SetStacks sets the "stacks" field.
+func (puo *ProjectsUpdateOne) SetStacks(s string) *ProjectsUpdateOne {
+	puo.mutation.SetStacks(s)
+	return puo
+}
+
+// SetNillableStacks sets the "stacks" field if the given value is not nil.
+func (puo *ProjectsUpdateOne) SetNillableStacks(s *string) *ProjectsUpdateOne {
+	if s != nil {
+		puo.SetStacks(*s)
+	}
 	return puo
 }
 
@@ -374,6 +405,9 @@ func (puo *ProjectsUpdateOne) sqlSave(ctx context.Context) (_node *Projects, err
 	}
 	if puo.mutation.DescriptionCleared() {
 		_spec.ClearField(projects.FieldDescription, field.TypeString)
+	}
+	if value, ok := puo.mutation.Stacks(); ok {
+		_spec.SetField(projects.FieldStacks, field.TypeString, value)
 	}
 	_node = &Projects{config: puo.config}
 	_spec.Assign = _node.assignValues

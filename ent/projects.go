@@ -23,7 +23,9 @@ type Projects struct {
 	// Link holds the value of the "link" field.
 	Link string `json:"link,omitempty"`
 	// Description holds the value of the "description" field.
-	Description  string `json:"description,omitempty"`
+	Description string `json:"description,omitempty"`
+	// Stacks holds the value of the "stacks" field.
+	Stacks       string `json:"stacks,omitempty"`
 	selectValues sql.SelectValues
 }
 
@@ -34,7 +36,7 @@ func (*Projects) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case projects.FieldID:
 			values[i] = new(sql.NullInt64)
-		case projects.FieldName, projects.FieldImageUrl, projects.FieldLink, projects.FieldDescription:
+		case projects.FieldName, projects.FieldImageUrl, projects.FieldLink, projects.FieldDescription, projects.FieldStacks:
 			values[i] = new(sql.NullString)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -80,6 +82,12 @@ func (pr *Projects) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field description", values[i])
 			} else if value.Valid {
 				pr.Description = value.String
+			}
+		case projects.FieldStacks:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field stacks", values[i])
+			} else if value.Valid {
+				pr.Stacks = value.String
 			}
 		default:
 			pr.selectValues.Set(columns[i], values[i])
@@ -128,6 +136,9 @@ func (pr *Projects) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("description=")
 	builder.WriteString(pr.Description)
+	builder.WriteString(", ")
+	builder.WriteString("stacks=")
+	builder.WriteString(pr.Stacks)
 	builder.WriteByte(')')
 	return builder.String()
 }

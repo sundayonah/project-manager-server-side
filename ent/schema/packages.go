@@ -27,6 +27,7 @@ func (Packages) Fields() []ent.Field {
 			Optional().
 			MaxLen(255).
 			Comment("A brief description of the package"),
+		field.String("stacks").Default("[]"),
 		field.Time("created_at").
 			Default(time.Now).
 			Comment("The time the package was created"),

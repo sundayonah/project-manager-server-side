@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"os"
 	"strconv"
 
 	"project-manager/ent"
@@ -19,10 +18,38 @@ import (
 
 var client *ent.Client
 
+// Update the project data structure
+type ProjectData struct {
+	Name        string   `json:"name"`
+	ImageUrl    string   `json:"imageUrl"`
+	Link        string   `json:"link"`
+	Description string   `json:"description"`
+	Stacks      []string `json:"stacks"` // Array of technology stacks
+}
+
+// Update the package data structure
+type PackageData struct {
+	Name        string   `json:"name"`
+	Link        string   `json:"link,omitempty"`
+	Description string   `json:"description,omitempty"`
+	Stacks      []string `json:"stacks"` // Array of technology stacks
+}
+
+type ProjectResponse struct {
+	ID int `json:"id"`
+	ProjectData
+}
+
+type PackageResponse struct {
+	ID int `json:"id"`
+	PackageData
+}
+
 // Initialize Database connection
 func InitDB() (*ent.Client, error) {
 	// Load environment variables
-	connectionString := os.Getenv("DATABASE_URL")
+	// connectionString := os.Getenv("DATABASE_URL")
+	connectionString := "postgresql://postgres:Encoded.001@localhost:5432/project-manager?sslmode=disable"
 	if connectionString == "" {
 		return nil, fmt.Errorf("database URL not found in environment variables")
 	}
@@ -54,44 +81,45 @@ func InitDB() (*ent.Client, error) {
 // @Router /api/projects/new [post]
 
 func CreateProjectHandler(w http.ResponseWriter, r *http.Request) {
-	var projectData struct {
-		Name        string `json:"name"`
-		ImageUrl    string `json:"imageUrl"`
-		Link        string `json:"link"`
-		Description string `json:"description"`
-	}
+	var projectData ProjectData
 
 	if err := json.NewDecoder(r.Body).Decode(&projectData); err != nil {
 		http.Error(w, "Invalid JSON format: "+err.Error(), http.StatusBadRequest)
 		return
 	}
 
+	// Validate required fields
 	if projectData.Name == "" {
-		http.Error(w, "Projects name is required", http.StatusBadRequest)
+		http.Error(w, "Project name is required", http.StatusBadRequest)
 		return
 	}
-
 	if projectData.ImageUrl == "" {
 		http.Error(w, "Image URL is required", http.StatusBadRequest)
 		return
 	}
-
 	if projectData.Link == "" {
 		http.Error(w, "Link is required", http.StatusBadRequest)
 		return
 	}
-
 	if projectData.Description == "" {
 		http.Error(w, "Description is required", http.StatusBadRequest)
 		return
 	}
 
-	// Create project using Ent
+	// Convert stacks array to JSON string
+	stacksJSON, err := json.Marshal(projectData.Stacks)
+	if err != nil {
+		http.Error(w, "Error processing stacks: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// Create project
 	project, err := client.Projects.Create().
 		SetName(projectData.Name).
 		SetImageUrl(projectData.ImageUrl).
 		SetLink(projectData.Link).
 		SetDescription(projectData.Description).
+		SetStacks(string(stacksJSON)).
 		Save(context.Background())
 
 	if err != nil {
@@ -99,8 +127,13 @@ func CreateProjectHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	response := ProjectResponse{
+		ID:          project.ID,
+		ProjectData: projectData,
+	}
+
 	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(project)
+	json.NewEncoder(w).Encode(response)
 }
 
 // GetProjectsHandler godoc
@@ -116,8 +149,27 @@ func GetProjectsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	var response []ProjectResponse
+	for _, project := range projects {
+		var stacks []string
+		if err := json.Unmarshal([]byte(project.Stacks), &stacks); err != nil {
+			stacks = []string{}
+		}
+
+		response = append(response, ProjectResponse{
+			ID: project.ID,
+			ProjectData: ProjectData{
+				Name:        project.Name,
+				ImageUrl:    project.ImageUrl,
+				Link:        project.Link,
+				Description: project.Description,
+				Stacks:      stacks,
+			},
+		})
+	}
+
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(projects)
+	json.NewEncoder(w).Encode(response)
 }
 
 // GetProjectByIDHandler godoc
@@ -145,14 +197,29 @@ func GetProjectByIDHandler(w http.ResponseWriter, r *http.Request) {
 		if ent.IsNotFound(err) {
 			http.Error(w, "Project not found", http.StatusNotFound)
 		} else {
-			log.Println("Error retrieving project:", err)
 			http.Error(w, "Internal server error", http.StatusInternalServerError)
 		}
 		return
 	}
 
+	var stacks []string
+	if err := json.Unmarshal([]byte(project.Stacks), &stacks); err != nil {
+		stacks = []string{}
+	}
+
+	response := ProjectResponse{
+		ID: project.ID,
+		ProjectData: ProjectData{
+			Name:        project.Name,
+			ImageUrl:    project.ImageUrl,
+			Link:        project.Link,
+			Description: project.Description,
+			Stacks:      stacks,
+		},
+	}
+
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(project)
+	json.NewEncoder(w).Encode(response)
 }
 
 // UpdateProjectHandler godoc
@@ -167,43 +234,39 @@ func UpdateProjectHandler(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	idStr := params["id"]
 
-	// Convert string to int64
 	var id int64
-	var err error
 	if idStr == "" {
 		http.Error(w, "Missing project ID", http.StatusBadRequest)
 		return
 	}
-	fmt.Sscan(idStr, &id, &err)
-	if err != nil {
-		http.Error(w, "Invalid project ID", http.StatusBadRequest)
-		return
-	}
+	fmt.Sscan(idStr, &id)
 
-	var updateData struct {
-		Name        *string `json:"name"`
-		ImageUrl    *string `json:"imageUrl"`
-		Link        *string `json:"link"`
-		Description *string `json:"description"`
-	}
-
-	if err := json.NewDecoder(r.Body).Decode(&updateData); err != nil {
+	var projectData ProjectData
+	if err := json.NewDecoder(r.Body).Decode(&projectData); err != nil {
 		http.Error(w, "Invalid JSON format", http.StatusBadRequest)
 		return
 	}
 
 	update := client.Projects.UpdateOneID(int(id))
-	if updateData.Name != nil && *updateData.Name != "" {
-		update.SetName(*updateData.Name)
+	if projectData.Name != "" {
+		update.SetName(projectData.Name)
 	}
-	if updateData.ImageUrl != nil && *updateData.ImageUrl != "" {
-		update.SetImageUrl(*updateData.ImageUrl)
+	if projectData.ImageUrl != "" {
+		update.SetImageUrl(projectData.ImageUrl)
 	}
-	if updateData.Link != nil && *updateData.Link != "" {
-		update.SetLink(*updateData.Link)
+	if projectData.Link != "" {
+		update.SetLink(projectData.Link)
 	}
-	if updateData.Description != nil && *updateData.Description != "" {
-		update.SetDescription(*updateData.Description)
+	if projectData.Description != "" {
+		update.SetDescription(projectData.Description)
+	}
+	if len(projectData.Stacks) > 0 {
+		stacksJSON, err := json.Marshal(projectData.Stacks)
+		if err != nil {
+			http.Error(w, "Error processing stacks: "+err.Error(), http.StatusInternalServerError)
+			return
+		}
+		update.SetStacks(string(stacksJSON))
 	}
 
 	project, err := update.Save(context.Background())
@@ -212,8 +275,24 @@ func UpdateProjectHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	var stacks []string
+	if err := json.Unmarshal([]byte(project.Stacks), &stacks); err != nil {
+		stacks = []string{}
+	}
+
+	response := ProjectResponse{
+		ID: project.ID,
+		ProjectData: ProjectData{
+			Name:        project.Name,
+			ImageUrl:    project.ImageUrl,
+			Link:        project.Link,
+			Description: project.Description,
+			Stacks:      stacks,
+		},
+	}
+
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(project)
+	json.NewEncoder(w).Encode(response)
 }
 
 // DeleteProjectHandler godoc
@@ -261,11 +340,7 @@ func DeleteProjectHandler(w http.ResponseWriter, r *http.Request) {
 // @Router /api/packages/new [post]
 
 func CreatePackageHandler(w http.ResponseWriter, r *http.Request) {
-	var packageData struct {
-		Name        string `json:"name"`
-		Link        string `json:"link,omitempty"`        // Optional field
-		Description string `json:"description,omitempty"` // Optional field
-	}
+	var packageData PackageData
 
 	if err := json.NewDecoder(r.Body).Decode(&packageData); err != nil {
 		http.Error(w, "Invalid JSON format: "+err.Error(), http.StatusBadRequest)
@@ -277,19 +352,31 @@ func CreatePackageHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Create the packages in the database
+	stacksJSON, err := json.Marshal(packageData.Stacks)
+	if err != nil {
+		http.Error(w, "Error processing stacks: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
 	packageRecord, err := client.Packages.Create().
 		SetName(packageData.Name).
 		SetLink(packageData.Link).
 		SetDescription(packageData.Description).
+		SetStacks(string(stacksJSON)).
 		Save(context.Background())
+
 	if err != nil {
-		http.Error(w, "Error saving packages: "+err.Error(), http.StatusInternalServerError)
+		http.Error(w, "Error saving package: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 
+	response := PackageResponse{
+		ID:          packageRecord.ID,
+		PackageData: packageData,
+	}
+
 	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(packageRecord)
+	json.NewEncoder(w).Encode(response)
 }
 
 // GetProjectsHandler godoc
@@ -299,15 +386,32 @@ func CreatePackageHandler(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {array} ent.Packages
 // @Router /api/packages [get]
 func GetPackagesHandler(w http.ResponseWriter, r *http.Request) {
-
 	packages, err := client.Packages.Query().All(context.Background())
 	if err != nil {
 		http.Error(w, "Error retrieving packages: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 
+	var response []PackageResponse
+	for _, pkg := range packages {
+		var stacks []string
+		if err := json.Unmarshal([]byte(pkg.Stacks), &stacks); err != nil {
+			stacks = []string{}
+		}
+
+		response = append(response, PackageResponse{
+			ID: pkg.ID,
+			PackageData: PackageData{
+				Name:        pkg.Name,
+				Link:        pkg.Link,
+				Description: pkg.Description,
+				Stacks:      stacks,
+			},
+		})
+	}
+
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(packages)
+	json.NewEncoder(w).Encode(response)
 }
 
 // GetPackageByIDHandler godoc
@@ -324,28 +428,39 @@ func GetPackagesHandler(w http.ResponseWriter, r *http.Request) {
 // @Router /packages/{id} [get]
 func GetPackageByIDHandler(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
-	packageIDStr := params["id"]
-
-	// Convert packageID from string to int
-	var packageID int
-	_, err := fmt.Sscan(packageIDStr, &packageID)
+	packageID, err := strconv.Atoi(params["id"])
 	if err != nil {
-		http.Error(w, "Invalid packages ID", http.StatusBadRequest)
+		http.Error(w, "Invalid package ID", http.StatusBadRequest)
 		return
 	}
 
-	packageRecord, err := client.Packages.Get(context.Background(), packageID)
+	pkg, err := client.Packages.Get(context.Background(), packageID)
 	if err != nil {
 		if ent.IsNotFound(err) {
 			http.Error(w, "Package not found", http.StatusNotFound)
 		} else {
-			http.Error(w, "Error retrieving packages: "+err.Error(), http.StatusInternalServerError)
+			http.Error(w, "Error retrieving package: "+err.Error(), http.StatusInternalServerError)
 		}
 		return
 	}
 
+	var stacks []string
+	if err := json.Unmarshal([]byte(pkg.Stacks), &stacks); err != nil {
+		stacks = []string{}
+	}
+
+	response := PackageResponse{
+		ID: pkg.ID,
+		PackageData: PackageData{
+			Name:        pkg.Name,
+			Link:        pkg.Link,
+			Description: pkg.Description,
+			Stacks:      stacks,
+		},
+	}
+
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(packageRecord)
+	json.NewEncoder(w).Encode(response)
 }
 
 // UpdatePackageHandler godoc
@@ -358,49 +473,64 @@ func GetPackageByIDHandler(w http.ResponseWriter, r *http.Request) {
 // @Router /packages/{id} [put]
 func UpdatePackageHandler(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
-	packageIDStr := params["id"]
-
-	// Convert packageID from string to int
-	var packageID int
-	_, err := fmt.Sscan(packageIDStr, &packageID)
+	packageID, err := strconv.Atoi(params["id"])
 	if err != nil {
-		http.Error(w, "Invalid packages ID", http.StatusBadRequest)
+		http.Error(w, "Invalid package ID", http.StatusBadRequest)
 		return
 	}
 
-	var packageData struct {
-		Name        string `json:"name"`
-		Link        string `json:"link,omitempty"`
-		Description string `json:"description,omitempty"`
-	}
-
+	var packageData PackageData
 	if err := json.NewDecoder(r.Body).Decode(&packageData); err != nil {
 		http.Error(w, "Invalid JSON format: "+err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	if packageData.Name == "" {
-		http.Error(w, "Package name is required", http.StatusBadRequest)
-		return
+	update := client.Packages.UpdateOneID(packageID)
+	if packageData.Name != "" {
+		update.SetName(packageData.Name)
+	}
+	if packageData.Link != "" {
+		update.SetLink(packageData.Link)
+	}
+	if packageData.Description != "" {
+		update.SetDescription(packageData.Description)
+	}
+	if len(packageData.Stacks) > 0 {
+		stacksJSON, err := json.Marshal(packageData.Stacks)
+		if err != nil {
+			http.Error(w, "Error processing stacks: "+err.Error(), http.StatusInternalServerError)
+			return
+		}
+		update.SetStacks(string(stacksJSON))
 	}
 
-	// Update the packages
-	packageRecord, err := client.Packages.UpdateOneID(packageID).
-		SetName(packageData.Name).
-		SetLink(packageData.Link).
-		SetDescription(packageData.Description).
-		Save(context.Background())
+	pkg, err := update.Save(context.Background())
 	if err != nil {
 		if ent.IsNotFound(err) {
 			http.Error(w, "Package not found", http.StatusNotFound)
 		} else {
-			http.Error(w, "Error updating packages: "+err.Error(), http.StatusInternalServerError)
+			http.Error(w, "Error updating package: "+err.Error(), http.StatusInternalServerError)
 		}
 		return
 	}
 
+	var stacks []string
+	if err := json.Unmarshal([]byte(pkg.Stacks), &stacks); err != nil {
+		stacks = []string{}
+	}
+
+	response := PackageResponse{
+		ID: pkg.ID,
+		PackageData: PackageData{
+			Name:        pkg.Name,
+			Link:        pkg.Link,
+			Description: pkg.Description,
+			Stacks:      stacks,
+		},
+	}
+
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(packageRecord)
+	json.NewEncoder(w).Encode(response)
 }
 
 // DeleteProjectHandler godoc

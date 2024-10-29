@@ -23,6 +23,8 @@ type Packages struct {
 	Link string `json:"link,omitempty"`
 	// A brief description of the package
 	Description string `json:"description,omitempty"`
+	// Stacks holds the value of the "stacks" field.
+	Stacks string `json:"stacks,omitempty"`
 	// The time the package was created
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// The time the package was last updated
@@ -37,7 +39,7 @@ func (*Packages) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case packages.FieldID:
 			values[i] = new(sql.NullInt64)
-		case packages.FieldName, packages.FieldLink, packages.FieldDescription:
+		case packages.FieldName, packages.FieldLink, packages.FieldDescription, packages.FieldStacks:
 			values[i] = new(sql.NullString)
 		case packages.FieldCreatedAt, packages.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -79,6 +81,12 @@ func (pa *Packages) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field description", values[i])
 			} else if value.Valid {
 				pa.Description = value.String
+			}
+		case packages.FieldStacks:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field stacks", values[i])
+			} else if value.Valid {
+				pa.Stacks = value.String
 			}
 		case packages.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -136,6 +144,9 @@ func (pa *Packages) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("description=")
 	builder.WriteString(pa.Description)
+	builder.WriteString(", ")
+	builder.WriteString("stacks=")
+	builder.WriteString(pa.Stacks)
 	builder.WriteString(", ")
 	builder.WriteString("created_at=")
 	builder.WriteString(pa.CreatedAt.Format(time.ANSIC))
