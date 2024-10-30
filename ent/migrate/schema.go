@@ -13,7 +13,7 @@ var (
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "name", Type: field.TypeString, Unique: true, Size: 100},
 		{Name: "link", Type: field.TypeString, Nullable: true},
-		{Name: "description", Type: field.TypeString, Nullable: true, Size: 255},
+		{Name: "description", Type: field.TypeString, Nullable: true, Size: 1000},
 		{Name: "stacks", Type: field.TypeString, Default: "[]"},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
@@ -30,7 +30,7 @@ var (
 		{Name: "name", Type: field.TypeString},
 		{Name: "image_url", Type: field.TypeString, Nullable: true},
 		{Name: "link", Type: field.TypeString, Nullable: true},
-		{Name: "description", Type: field.TypeString, Nullable: true},
+		{Name: "description", Type: field.TypeString, Nullable: true, Size: 1000},
 		{Name: "stacks", Type: field.TypeString, Default: "[]"},
 	}
 	// ProjectsTable holds the schema information for the "projects" table.

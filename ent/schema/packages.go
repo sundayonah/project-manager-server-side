@@ -25,7 +25,7 @@ func (Packages) Fields() []ent.Field {
 			Comment("The link to the package"),
 		field.String("description").
 			Optional().
-			MaxLen(255).
+			MaxLen(1000).
 			Comment("A brief description of the package"),
 		field.String("stacks").Default("[]"),
 		field.Time("created_at").

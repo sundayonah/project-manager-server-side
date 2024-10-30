@@ -22,7 +22,7 @@ type Projects struct {
 	ImageUrl string `json:"imageUrl,omitempty"`
 	// Link holds the value of the "link" field.
 	Link string `json:"link,omitempty"`
-	// Description holds the value of the "description" field.
+	// A brief description of the package
 	Description string `json:"description,omitempty"`
 	// Stacks holds the value of the "stacks" field.
 	Stacks       string `json:"stacks,omitempty"`

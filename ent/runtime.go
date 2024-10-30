@@ -57,6 +57,10 @@ func init() {
 	projectsDescName := projectsFields[0].Descriptor()
 	// projects.NameValidator is a validator for the "name" field. It is called by the builders before save.
 	projects.NameValidator = projectsDescName.Validators[0].(func(string) error)
+	// projectsDescDescription is the schema descriptor for description field.
+	projectsDescDescription := projectsFields[3].Descriptor()
+	// projects.DescriptionValidator is a validator for the "description" field. It is called by the builders before save.
+	projects.DescriptionValidator = projectsDescDescription.Validators[0].(func(string) error)
 	// projectsDescStacks is the schema descriptor for stacks field.
 	projectsDescStacks := projectsFields[4].Descriptor()
 	// projects.DefaultStacks holds the default value on creation for the stacks field.

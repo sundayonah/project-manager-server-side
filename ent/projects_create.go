@@ -132,6 +132,11 @@ func (pc *ProjectsCreate) check() error {
 			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "Projects.name": %w`, err)}
 		}
 	}
+	if v, ok := pc.mutation.Description(); ok {
+		if err := projects.DescriptionValidator(v); err != nil {
+			return &ValidationError{Name: "description", err: fmt.Errorf(`ent: validator failed for field "Projects.description": %w`, err)}
+		}
+	}
 	if _, ok := pc.mutation.Stacks(); !ok {
 		return &ValidationError{Name: "stacks", err: errors.New(`ent: missing required field "Projects.stacks"`)}
 	}

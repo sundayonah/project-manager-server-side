@@ -154,6 +154,11 @@ func (pu *ProjectsUpdate) check() error {
 			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "Projects.name": %w`, err)}
 		}
 	}
+	if v, ok := pu.mutation.Description(); ok {
+		if err := projects.DescriptionValidator(v); err != nil {
+			return &ValidationError{Name: "description", err: fmt.Errorf(`ent: validator failed for field "Projects.description": %w`, err)}
+		}
+	}
 	return nil
 }
 
@@ -351,6 +356,11 @@ func (puo *ProjectsUpdateOne) check() error {
 	if v, ok := puo.mutation.Name(); ok {
 		if err := projects.NameValidator(v); err != nil {
 			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "Projects.name": %w`, err)}
+		}
+	}
+	if v, ok := puo.mutation.Description(); ok {
+		if err := projects.DescriptionValidator(v); err != nil {
+			return &ValidationError{Name: "description", err: fmt.Errorf(`ent: validator failed for field "Projects.description": %w`, err)}
 		}
 	}
 	return nil

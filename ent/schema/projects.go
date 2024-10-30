@@ -14,7 +14,10 @@ func (Projects) Fields() []ent.Field {
 		field.String("name").NotEmpty(),
 		field.String("imageUrl").Optional(),
 		field.String("link").Optional(),
-		field.String("description").Optional(),
+		field.String("description").
+			Optional().
+			MaxLen(1000).
+			Comment("A brief description of the package"),
 		field.String("stacks").Default("[]"),
 		// field.Time("created_at").
 		// 	Default(time.Now).
