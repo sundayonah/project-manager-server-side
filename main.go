@@ -591,7 +591,7 @@ func main() {
 
 	// Enhanced CORS middleware
 	corsHandler := handlers.CORS(
-		handlers.AllowedOrigins([]string{"https://next-project-manager-one.vercel.app", "https://project-manager-server-side-production.up.railway.app"}),
+		handlers.AllowedOrigins([]string{"http://localhost:3000", "https://project-manager-server-side-production.up.railway.app"}),
 		handlers.AllowedMethods([]string{"GET", "POST", "PUT", "DELETE", "OPTIONS"}),
 		handlers.AllowedHeaders([]string{"Content-Type", "Authorization", "X-Requested-With"}),
 		handlers.AllowCredentials(),
