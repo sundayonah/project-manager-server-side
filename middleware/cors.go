@@ -9,7 +9,7 @@ import (
 func CORSMiddleware() func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		corsMiddleware := cors.New(cors.Options{
-			AllowedOrigins: []string{"http://localhost:3001"}, // Add your frontend URL here
+			AllowedOrigins: []string{"http://localhost:3001", "https://project-manager-server-side-production.up.railway.app"}, // Add your frontend URL here
 			AllowedMethods: []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 			AllowedHeaders: []string{"Content-Type", "Authorization", "X-Requested-With"},
 			ExposedHeaders: []string{"Content-Length"},
