@@ -10,8 +10,8 @@ import (
 	"strconv"
 
 	"project-manager/ent"
+	"project-manager/middleware"
 
-	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	_ "github.com/lib/pq"
 	httpSwagger "github.com/swaggo/http-swagger"
@@ -589,19 +589,29 @@ func main() {
 	// Swagger documentation route
 	r.PathPrefix("/swagger/").Handler(httpSwagger.WrapHandler)
 
-	// Enhanced CORS middleware
-	corsHandler := handlers.CORS(
-		handlers.AllowedOrigins([]string{"http://localhost:3000", "https://project-manager-server-side-production.up.railway.app"}),
-		handlers.AllowedMethods([]string{"GET", "POST", "PUT", "DELETE", "OPTIONS"}),
-		handlers.AllowedHeaders([]string{"Content-Type", "Authorization", "X-Requested-With"}),
-		handlers.AllowCredentials(),
-		handlers.ExposedHeaders([]string{"Content-Length"}),
-		handlers.MaxAge(86400), // 24 hours
-	)(r)
+	// Apply CORS middleware
+	r.Use(middleware.CORSMiddleware())
 
 	// Start the server
 	log.Println("Starting server on :8080...")
-	if err := http.ListenAndServe(":8080", corsHandler); err != nil {
+	if err := http.ListenAndServe(":8080", r); err != nil {
 		log.Fatalf("Could not start server: %v", err)
 	}
 }
+
+// 	// Enhanced CORS middleware
+// 	corsHandler := handlers.CORS(
+// 		handlers.AllowedOrigins([]string{"http://localhost:3000", "https://project-manager-server-side-production.up.railway.app"}),
+// 		handlers.AllowedMethods([]string{"GET", "POST", "PUT", "DELETE", "OPTIONS"}),
+// 		handlers.AllowedHeaders([]string{"Content-Type", "Authorization", "X-Requested-With"}),
+// 		handlers.AllowCredentials(),
+// 		handlers.ExposedHeaders([]string{"Content-Length"}),
+// 		handlers.MaxAge(86400), // 24 hours
+// 	)(r)
+
+// 	// Start the server
+// 	log.Println("Starting server on :8080...")
+// 	if err := http.ListenAndServe(":8080", corsHandler); err != nil {
+// 		log.Fatalf("Could not start server: %v", err)
+// 	}
+// }
