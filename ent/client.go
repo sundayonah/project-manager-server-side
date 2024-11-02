@@ -11,6 +11,7 @@ import (
 
 	"project-manager/ent/migrate"
 
+	"project-manager/ent/clients"
 	"project-manager/ent/packages"
 	"project-manager/ent/projects"
 
@@ -24,6 +25,8 @@ type Client struct {
 	config
 	// Schema is the client for creating, migrating and dropping schema.
 	Schema *migrate.Schema
+	// Clients is the client for interacting with the Clients builders.
+	Clients *ClientsClient
 	// Packages is the client for interacting with the Packages builders.
 	Packages *PackagesClient
 	// Projects is the client for interacting with the Projects builders.
@@ -39,6 +42,7 @@ func NewClient(opts ...Option) *Client {
 
 func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
+	c.Clients = NewClientsClient(c.config)
 	c.Packages = NewPackagesClient(c.config)
 	c.Projects = NewProjectsClient(c.config)
 }
@@ -133,6 +137,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	return &Tx{
 		ctx:      ctx,
 		config:   cfg,
+		Clients:  NewClientsClient(cfg),
 		Packages: NewPackagesClient(cfg),
 		Projects: NewProjectsClient(cfg),
 	}, nil
@@ -154,6 +159,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	return &Tx{
 		ctx:      ctx,
 		config:   cfg,
+		Clients:  NewClientsClient(cfg),
 		Packages: NewPackagesClient(cfg),
 		Projects: NewProjectsClient(cfg),
 	}, nil
@@ -162,7 +168,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 // Debug returns a new debug-client. It's used to get verbose logging on specific operations.
 //
 //	client.Debug().
-//		Packages.
+//		Clients.
 //		Query().
 //		Count(ctx)
 func (c *Client) Debug() *Client {
@@ -184,6 +190,7 @@ func (c *Client) Close() error {
 // Use adds the mutation hooks to all the entity clients.
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
+	c.Clients.Use(hooks...)
 	c.Packages.Use(hooks...)
 	c.Projects.Use(hooks...)
 }
@@ -191,6 +198,7 @@ func (c *Client) Use(hooks ...Hook) {
 // Intercept adds the query interceptors to all the entity clients.
 // In order to add interceptors to a specific client, call: `client.Node.Intercept(...)`.
 func (c *Client) Intercept(interceptors ...Interceptor) {
+	c.Clients.Intercept(interceptors...)
 	c.Packages.Intercept(interceptors...)
 	c.Projects.Intercept(interceptors...)
 }
@@ -198,12 +206,147 @@ func (c *Client) Intercept(interceptors ...Interceptor) {
 // Mutate implements the ent.Mutator interface.
 func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 	switch m := m.(type) {
+	case *ClientsMutation:
+		return c.Clients.mutate(ctx, m)
 	case *PackagesMutation:
 		return c.Packages.mutate(ctx, m)
 	case *ProjectsMutation:
 		return c.Projects.mutate(ctx, m)
 	default:
 		return nil, fmt.Errorf("ent: unknown mutation type %T", m)
+	}
+}
+
+// ClientsClient is a client for the Clients schema.
+type ClientsClient struct {
+	config
+}
+
+// NewClientsClient returns a client for the Clients from the given config.
+func NewClientsClient(c config) *ClientsClient {
+	return &ClientsClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `clients.Hooks(f(g(h())))`.
+func (c *ClientsClient) Use(hooks ...Hook) {
+	c.hooks.Clients = append(c.hooks.Clients, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `clients.Intercept(f(g(h())))`.
+func (c *ClientsClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Clients = append(c.inters.Clients, interceptors...)
+}
+
+// Create returns a builder for creating a Clients entity.
+func (c *ClientsClient) Create() *ClientsCreate {
+	mutation := newClientsMutation(c.config, OpCreate)
+	return &ClientsCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Clients entities.
+func (c *ClientsClient) CreateBulk(builders ...*ClientsCreate) *ClientsCreateBulk {
+	return &ClientsCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *ClientsClient) MapCreateBulk(slice any, setFunc func(*ClientsCreate, int)) *ClientsCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &ClientsCreateBulk{err: fmt.Errorf("calling to ClientsClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*ClientsCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &ClientsCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Clients.
+func (c *ClientsClient) Update() *ClientsUpdate {
+	mutation := newClientsMutation(c.config, OpUpdate)
+	return &ClientsUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *ClientsClient) UpdateOne(cl *Clients) *ClientsUpdateOne {
+	mutation := newClientsMutation(c.config, OpUpdateOne, withClients(cl))
+	return &ClientsUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *ClientsClient) UpdateOneID(id int) *ClientsUpdateOne {
+	mutation := newClientsMutation(c.config, OpUpdateOne, withClientsID(id))
+	return &ClientsUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Clients.
+func (c *ClientsClient) Delete() *ClientsDelete {
+	mutation := newClientsMutation(c.config, OpDelete)
+	return &ClientsDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *ClientsClient) DeleteOne(cl *Clients) *ClientsDeleteOne {
+	return c.DeleteOneID(cl.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *ClientsClient) DeleteOneID(id int) *ClientsDeleteOne {
+	builder := c.Delete().Where(clients.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &ClientsDeleteOne{builder}
+}
+
+// Query returns a query builder for Clients.
+func (c *ClientsClient) Query() *ClientsQuery {
+	return &ClientsQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeClients},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a Clients entity by its id.
+func (c *ClientsClient) Get(ctx context.Context, id int) (*Clients, error) {
+	return c.Query().Where(clients.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *ClientsClient) GetX(ctx context.Context, id int) *Clients {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *ClientsClient) Hooks() []Hook {
+	return c.hooks.Clients
+}
+
+// Interceptors returns the client interceptors.
+func (c *ClientsClient) Interceptors() []Interceptor {
+	return c.inters.Clients
+}
+
+func (c *ClientsClient) mutate(ctx context.Context, m *ClientsMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&ClientsCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&ClientsUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&ClientsUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&ClientsDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Clients mutation op: %q", m.Op())
 	}
 }
 
@@ -476,9 +619,9 @@ func (c *ProjectsClient) mutate(ctx context.Context, m *ProjectsMutation) (Value
 // hooks and interceptors per client, for fast access.
 type (
 	hooks struct {
-		Packages, Projects []ent.Hook
+		Clients, Packages, Projects []ent.Hook
 	}
 	inters struct {
-		Packages, Projects []ent.Interceptor
+		Clients, Packages, Projects []ent.Interceptor
 	}
 )

@@ -37,6 +37,13 @@ func main() {
 	r.HandleFunc("/api/packages/{id}", handler.UpdatePackageHandler).Methods("PUT", "OPTIONS")
 	r.HandleFunc("/api/packages/{id}", handler.DeletePackageHandler).Methods("DELETE", "OPTIONS")
 
+	// Client routes
+	r.HandleFunc("/api/clients/new", handler.CreateClientHandler).Methods("POST", "OPTIONS")
+	r.HandleFunc("/api/clients", handler.GetClientsHandler).Methods("GET", "OPTIONS")
+	r.HandleFunc("/api/clients/{id}", handler.GetClientByIDHandler).Methods("GET", "OPTIONS")
+	r.HandleFunc("/api/clients/{id}", handler.UpdateClientHandler).Methods("PUT", "OPTIONS")
+	r.HandleFunc("/api/clients/{id}", handler.DeleteClientHandler).Methods("DELETE", "OPTIONS")
+
 	// Swagger documentation route
 	r.PathPrefix("/swagger/").Handler(httpSwagger.WrapHandler)
 

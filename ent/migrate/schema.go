@@ -8,6 +8,21 @@ import (
 )
 
 var (
+	// ClientsColumns holds the columns for the "clients" table.
+	ClientsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "name", Type: field.TypeString, Unique: true, Size: 100},
+		{Name: "link", Type: field.TypeString, Nullable: true},
+		{Name: "image_url", Type: field.TypeString, Nullable: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+	}
+	// ClientsTable holds the schema information for the "clients" table.
+	ClientsTable = &schema.Table{
+		Name:       "clients",
+		Columns:    ClientsColumns,
+		PrimaryKey: []*schema.Column{ClientsColumns[0]},
+	}
 	// PackagesColumns holds the columns for the "packages" table.
 	PackagesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
@@ -41,6 +56,7 @@ var (
 	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
+		ClientsTable,
 		PackagesTable,
 		ProjectsTable,
 	}

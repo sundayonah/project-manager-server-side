@@ -3,6 +3,7 @@
 package ent
 
 import (
+	"project-manager/ent/clients"
 	"project-manager/ent/packages"
 	"project-manager/ent/projects"
 	"project-manager/ent/schema"
@@ -13,6 +14,36 @@ import (
 // (default values, validators, hooks and policies) and stitches it
 // to their package variables.
 func init() {
+	clientsFields := schema.Clients{}.Fields()
+	_ = clientsFields
+	// clientsDescName is the schema descriptor for name field.
+	clientsDescName := clientsFields[0].Descriptor()
+	// clients.NameValidator is a validator for the "name" field. It is called by the builders before save.
+	clients.NameValidator = func() func(string) error {
+		validators := clientsDescName.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(name string) error {
+			for _, fn := range fns {
+				if err := fn(name); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// clientsDescCreatedAt is the schema descriptor for created_at field.
+	clientsDescCreatedAt := clientsFields[3].Descriptor()
+	// clients.DefaultCreatedAt holds the default value on creation for the created_at field.
+	clients.DefaultCreatedAt = clientsDescCreatedAt.Default.(func() time.Time)
+	// clientsDescUpdatedAt is the schema descriptor for updated_at field.
+	clientsDescUpdatedAt := clientsFields[4].Descriptor()
+	// clients.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	clients.DefaultUpdatedAt = clientsDescUpdatedAt.Default.(func() time.Time)
+	// clients.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	clients.UpdateDefaultUpdatedAt = clientsDescUpdatedAt.UpdateDefault.(func() time.Time)
 	packagesFields := schema.Packages{}.Fields()
 	_ = packagesFields
 	// packagesDescName is the schema descriptor for name field.

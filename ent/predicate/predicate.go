@@ -6,6 +6,9 @@ import (
 	"entgo.io/ent/dialect/sql"
 )
 
+// Clients is the predicate function for clients builders.
+type Clients func(*sql.Selector)
+
 // Packages is the predicate function for packages builders.
 type Packages func(*sql.Selector)
 

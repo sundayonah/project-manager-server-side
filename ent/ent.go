@@ -6,6 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"project-manager/ent/clients"
 	"project-manager/ent/packages"
 	"project-manager/ent/projects"
 	"reflect"
@@ -74,6 +75,7 @@ var (
 func checkColumn(table, column string) error {
 	initCheck.Do(func() {
 		columnCheck = sql.NewColumnCheck(map[string]func(string) bool{
+			clients.Table:  clients.ValidColumn,
 			packages.Table: packages.ValidColumn,
 			projects.Table: projects.ValidColumn,
 		})

@@ -3,7 +3,6 @@ package database
 import (
 	"context"
 	"fmt"
-	"os"
 
 	"project-manager/ent"
 
@@ -16,7 +15,8 @@ var Client *ent.Client
 func InitDB() (*ent.Client, error) {
 	fmt.Println("Starting database connection")
 	// Load environment variables
-	connectionString := os.Getenv("DATABASE_URL")
+	// connectionString := os.Getenv("DATABASE_URL")
+	connectionString := "postgresql://postgres:Encoded.001@localhost:5432/project-manager?sslmode=disable"
 	fmt.Println("connection string: ", connectionString)
 	if connectionString == "" {
 		return nil, fmt.Errorf("database URL not found in environment variables")

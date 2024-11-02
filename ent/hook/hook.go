@@ -8,6 +8,18 @@ import (
 	"project-manager/ent"
 )
 
+// The ClientsFunc type is an adapter to allow the use of ordinary
+// function as Clients mutator.
+type ClientsFunc func(context.Context, *ent.ClientsMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f ClientsFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.ClientsMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ClientsMutation", m)
+}
+
 // The PackagesFunc type is an adapter to allow the use of ordinary
 // function as Packages mutator.
 type PackagesFunc func(context.Context, *ent.PackagesMutation) (ent.Value, error)
